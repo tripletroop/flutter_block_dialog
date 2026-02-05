@@ -1,0 +1,22 @@
+name: block_dialog_example
+publish_to: "none"
+description: Example application for the block_dialog package.
+
+environment:
+  sdk: ">=3.9.0 <4.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  block_dialog:
+    path: ..
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
