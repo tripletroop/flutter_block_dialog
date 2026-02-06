@@ -74,7 +74,7 @@ abstract class Block {
   /// Whether this block should use the dialog's background/stroke decoration.
   bool _shouldAddDecoration() {
     if (this is BlockCustom) {
-      return !(this as BlockCustom).matchDialogTheme;
+      return (this as BlockCustom).matchDialogTheme;
     }
     if (this is BlockSpacer) {
       return false;

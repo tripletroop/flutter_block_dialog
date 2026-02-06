@@ -1,3 +1,8 @@
+## 1.0.1
+- Fixed BlockCustom decoration logic when `matchDialogTheme` is enabled/disabled.
+
+--------
+
 ## 1.0.0
 
 - Initial release of block-based dialog system.

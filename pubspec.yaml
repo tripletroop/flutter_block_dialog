@@ -1,6 +1,6 @@
 name: block_dialog
 description: "Block-based, animated dialogs for Flutter with composable layout, typed results, and fine-grained dismissal control."
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/tripletroop/flutter_block_dialog
 repository: https://github.com/tripletroop/flutter_block_dialog
 

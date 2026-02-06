@@ -13,7 +13,7 @@ Block-based, animated dialogs for Flutter with composable layout, typed results,
 Add to `pubspec.yaml`:
 ```yaml
 dependencies:
-  block_dialog: ^1.0.0
+  block_dialog: ^1.0.1
 ```
 
 ## Preview
