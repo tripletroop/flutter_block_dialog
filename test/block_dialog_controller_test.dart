@@ -33,6 +33,7 @@ void main() {
 
     controller.initialize(
       animationController: animation,
+      textDirection: TextDirection.ltr,
       rows: [
         BlockRow(blocks: [
           _ValueBlock(resultId: 'name', value: 'John'),
@@ -57,6 +58,7 @@ void main() {
     expect(
       () => controller.initialize(
         animationController: animation,
+        textDirection: TextDirection.ltr,
         rows: [
           BlockRow(blocks: [
             _ValueBlock(resultId: 'dup', value: 1),

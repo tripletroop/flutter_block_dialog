@@ -40,6 +40,7 @@ class BlockDialog {
     required List<BlockRow> rows,
     required BlockDialogController controller,
     DialogConfig configs = const DialogConfig(),
+    EdgeInsetsGeometry? childsPadding,
   }) {
     return BlockDialogContent(
       key: key,

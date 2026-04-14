@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:block_dialog/src/layout/blocks/block.dart';
+import 'package:flutter/material.dart';
 
 class PositionResolvingData {
   /// Zero-based row index of the block.
@@ -23,7 +26,8 @@ class PositionResolvingData {
 
 class PositionResolver {
   /// Resolve the [BlockPosition] based on grid coordinates.
-  static BlockPosition resolve(PositionResolvingData data) {
+  static BlockPosition resolve(
+      PositionResolvingData data, TextDirection textDirection) {
     // Single block
     if (data.rowCount == 1 && data.columnCount == 1) {
       return BlockPosition.full;
@@ -31,8 +35,12 @@ class PositionResolver {
 
     final isTop = data.rowIndex == 0;
     final isBottom = data.rowIndex == data.rowCount - 1;
-    final isLeft = data.columnIndex == 0;
-    final isRight = data.columnIndex == data.columnCount - 1;
+    final isStart = data.columnIndex == 0;
+    final isEnd = data.columnIndex == data.columnCount - 1;
+
+    // Adjust for text direction
+    final isLeft = textDirection == TextDirection.ltr ? isStart : isEnd;
+    final isRight = textDirection == TextDirection.ltr ? isEnd : isStart;
 
     // Edges
     if (isTop && isLeft && isRight) return BlockPosition.top;

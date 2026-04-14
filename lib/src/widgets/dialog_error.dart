@@ -6,13 +6,19 @@ class DialogError extends StatelessWidget {
 
   /// Callback to clear the error.
   final VoidCallback? onClear;
+
+  /// Optional width constraint for the error banner.
+  final double? width;
   const DialogError(
-      {super.key, required this.errorMessage, required this.onClear});
+      {super.key,
+      required this.errorMessage,
+      required this.onClear,
+      this.width});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: width ?? double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       margin: const EdgeInsets.only(top: 4),
       decoration: BoxDecoration(

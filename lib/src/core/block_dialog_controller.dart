@@ -1,6 +1,7 @@
 import 'package:block_dialog/src/layout/blocks/block.dart';
 import 'package:block_dialog/src/layout/block_row.dart';
 import 'package:block_dialog/src/models/blocks_result.dart';
+import 'package:block_dialog/src/utils/block_shaker.dart';
 import 'package:block_dialog/src/utils/position_resolver.dart';
 import 'package:flutter/material.dart';
 
@@ -18,9 +19,12 @@ class BlockDialogController {
   final List<Block> _blocks = [];
   bool isAnimating = false;
 
+  late final BlockShaker blockShaker;
+
   void initialize({
     required AnimationController animationController,
     required List<BlockRow> rows,
+    required TextDirection textDirection,
   }) {
     _animation = animationController;
     final resolvableRows =
@@ -38,7 +42,8 @@ class BlockDialogController {
           columnCount: row.blocks.length,
         );
         block.setPositionIfNotProvided(
-            resolvedPosition: PositionResolver.resolve(position));
+            resolvedPosition:
+                PositionResolver.resolve(position, textDirection));
       }
     }
     for (final unresolvedBlock in rows
@@ -48,10 +53,16 @@ class BlockDialogController {
           resolvedPosition: BlockPosition.middle);
     }
     _blocks.addAll(rows.expand((row) => row.blocks));
+    blockShaker = BlockShaker(_blocks);
     assert(
       _validateUniqueResultIds(_blocks),
       'Duplicate Block IDs detected. '
       'Each result-producing block must have a unique id.',
+    );
+    assert(
+      _validateUniqueBlockTags(_blocks),
+      'Duplicate Block tags detected. '
+      'Each block must have a unique tag.',
     );
   }
 
@@ -61,6 +72,17 @@ class BlockDialogController {
     for (final block in blocks) {
       if (block.resultId == null) continue;
       if (!ids.add(block.resultId!)) return false;
+    }
+
+    return true;
+  }
+
+  bool _validateUniqueBlockTags(List<Block> blocks) {
+    final tags = <String>{};
+
+    for (final block in blocks) {
+      if (block.blockTag == null) continue;
+      if (!tags.add(block.blockTag!)) return false;
     }
 
     return true;
@@ -97,6 +119,7 @@ class BlockDialogController {
     isAnimating = true;
     await _animation?.reverse();
     onAnimateOutComplete?.call(results);
+    isAnimating = false;
   }
 
   /// Dispose the internal animation controller.

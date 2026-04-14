@@ -1,6 +1,7 @@
 name: block_dialog_example
 publish_to: "none"
 description: Example application for the block_dialog package.
+version: 1.0.1
 
 environment:
   sdk: ">=3.9.0 <4.0.0"

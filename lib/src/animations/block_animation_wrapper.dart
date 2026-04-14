@@ -6,30 +6,30 @@ class AnimatedBlockWrapper extends StatelessWidget {
   /// Wraps a block with the configured animation.
   final Widget child;
   final BlockPosition? position;
-  final AnimationController? controller;
-  final BlockAnimation animation;
+  final AnimationController? animationController;
+  final BlockAnimation blockAnimation;
 
   const AnimatedBlockWrapper({
     super.key,
     required this.child,
-    required this.animation,
+    required this.blockAnimation,
     this.position,
-    this.controller,
+    this.animationController,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (position == null || controller == null) {
+    if (position == null || animationController == null) {
       return child;
     }
 
     final curved = CurvedAnimation(
-      parent: controller!,
+      parent: animationController!,
       curve: Curves.linear,
       reverseCurve: Curves.linear,
     );
 
-    return animation.build(
+    return blockAnimation.build(
       child: child,
       position: position!,
       animation: curved,

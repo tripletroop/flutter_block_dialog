@@ -27,13 +27,17 @@ class ExampleHome extends StatelessWidget {
   void _showCustomBlockDialog(BuildContext context) {
     BlockDialog.show<void>(
       context,
-      configs: DialogConfig(blockAnimation: BlockAnimation.slide()),
+      configs: DialogConfig(
+        blockAnimation: BlockAnimation.slide(),
+        childsPadding: EdgeInsetsGeometry.all(5),
+        textDirection: TextDirection.rtl,
+      ),
       rows: [
         BlockRow(
           ignoreInPositionResolving: true,
           blocks: [
             BlockCustom(
-              minHeight: 50,
+              minHeight: 550,
               matchDialogTheme: false,
               override: BlockOverride(
                 animationPosition: BlockPosition.top,
@@ -72,6 +76,7 @@ class ExampleHome extends StatelessWidget {
                 animationPosition: BlockPosition.middleRight,
               ),
               hintText: 'Enter your name',
+              initialText: 'John Doe',
             ),
           ],
         ),
@@ -115,6 +120,7 @@ class ExampleHome extends StatelessWidget {
             BlockText(
               text: 'Middle',
               minHeight: 50,
+              blockTag: 'middleText',
               flex: 2,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
@@ -129,7 +135,8 @@ class ExampleHome extends StatelessWidget {
           blocks: [
             BlockButton(
               label: 'Submit',
-              onValidate: (result) {
+              onValidate: (result, blockShaker) async {
+                blockShaker.shakeBlock('middleText');
                 final name = result.values['name'] as String?;
                 if (name == null || name.isEmpty) {
                   return 'Name cannot be empty.';

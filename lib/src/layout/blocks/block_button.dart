@@ -2,9 +2,11 @@ import 'package:block_dialog/src/layout/blocks/block.dart';
 import 'package:block_dialog/src/models/blocks_result.dart';
 import 'package:block_dialog/src/theme/dialog_config.dart';
 import 'package:block_dialog/src/core/block_dialog_controller.dart';
+import 'package:block_dialog/src/utils/block_shaker.dart';
 import 'package:flutter/material.dart';
 
-typedef BlockValidation = Function(BlocksResult result);
+typedef BlockValidation = Future<String?> Function(
+    BlocksResult result, BlockShaker blockShaker);
 
 class BlockButton extends Block {
   /// Button block that can close the dialog and return a payload.
@@ -14,6 +16,7 @@ class BlockButton extends Block {
     super.flex = 1,
     super.override,
     super.minHeight,
+    super.blockTag,
     this.payload,
     this.onPressed,
     this.onValidate,
@@ -38,9 +41,9 @@ class BlockButton extends Block {
   final bool closeOnPress;
 
   /// Called after validation when the button is pressed.
-  final Function(BlocksResult result)? onPressed;
+  final Future<void> Function(BlocksResult result)? onPressed;
 
-  /// Optional validation callback; return an error to show it.
+  /// Optional validation callback; return an error to show it or null if all valid.
   final BlockValidation? onValidate;
 
   final ValueNotifier<bool> _loading = ValueNotifier(false);
@@ -110,15 +113,17 @@ class BlockButton extends Block {
   }
 
   Future<void> _handleTap(BlockDialogController controller) async {
+    _loading.value = true;
     final result = controller.collectResults(payload: payload);
 
     // Validation
-    final error = await onValidate?.call(result);
+    final error = await onValidate?.call(result, controller.blockShaker);
     if (error != null) {
       controller.onError?.call(error);
+      _loading.value = false;
       return;
     }
-    _loading.value = true;
+
     await onPressed?.call(result);
     if (closeOnPress) {
       await controller.animateOut(result);

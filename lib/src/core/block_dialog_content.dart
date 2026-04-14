@@ -19,34 +19,44 @@ class BlockDialogContent extends StatelessWidget {
   /// Controller used for block interactions/animations.
   final BlockDialogController controller;
 
-  /// Visual styling and animation configuration.
+  /// Visual styling and animation configuration for the dialog and all the children blocks.
   final DialogConfig configs;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: rows
-          .map((blocksRow) {
-            return Row(
-              children: blocksRow.blocks
-                  .map((block) {
-                    return Flexible(
-                      flex: block.flex,
-                      child: block.build(
-                        context,
-                        controller,
-                        configs,
-                      ),
-                    );
-                  })
-                  .cast<Widget>()
-                  .intersperse(SizedBox(width: configs.blocksSpacing))
-                  .toList(),
-            );
-          })
-          .cast<Widget>()
-          .intersperse(SizedBox(height: configs.blocksSpacing))
-          .toList(),
+    final maxHeight = MediaQuery.of(context).size.height * 0.8;
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: configs.maxHeight ?? maxHeight,
+        maxWidth: configs.maxWidth ?? double.infinity,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          children: rows
+              .map((blocksRow) {
+                return Row(
+                  textDirection: configs.textDirection,
+                  children: blocksRow.blocks
+                      .map((block) {
+                        return Flexible(
+                          flex: block.flex,
+                          child: block.build(
+                            context,
+                            controller,
+                            configs,
+                          ),
+                        );
+                      })
+                      .cast<Widget>()
+                      .intersperse(SizedBox(width: configs.blocksSpacing))
+                      .toList(),
+                );
+              })
+              .cast<Widget>()
+              .intersperse(SizedBox(height: configs.blocksSpacing))
+              .toList(),
+        ),
+      ),
     );
   }
 }

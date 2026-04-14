@@ -20,7 +20,27 @@ class BlockRadioGroup<T> extends Block {
 
     /// Provides a label string when not using a custom builder.
     this.labelBuilder,
+    this.mouseCursor,
+    this.activeColor,
+    this.fillColor,
+    this.hoverColor,
+    this.overlayColor,
+    this.splashRadius,
+    this.materialTapTargetSize,
+    this.visualDensity = VisualDensity.compact,
+    this.focusNode,
+    this.autofocus = false,
+    this.tileColor,
+    this.selectedTileColor,
+    this.enableFeedback,
+    this.isThreeLine = false,
+    this.dense = true,
+    this.contentPadding = const EdgeInsets.symmetric(horizontal: 12.0),
+    this.shape,
+    this.controlAffinity = ListTileControlAffinity.platform,
+    this.titleAlignment,
     super.flex = 1,
+    super.blockTag,
     super.override,
     super.minHeight,
   })  : _options = options,
@@ -36,6 +56,63 @@ class BlockRadioGroup<T> extends Block {
   final ValueChanged<T?>? onChanged;
   final Widget Function(T option, bool selected)? itemBuilder;
   final String Function(T option)? labelBuilder;
+
+  /// Optional mouse cursor for the radio tile.
+  final MouseCursor? mouseCursor;
+
+  /// Optional active color for selected radio.
+  final Color? activeColor;
+
+  /// Optional fill color based on material state.
+  final WidgetStateProperty<Color?>? fillColor;
+
+  /// Optional hover color.
+  final Color? hoverColor;
+
+  /// Optional overlay color based on material state.
+  final WidgetStateProperty<Color?>? overlayColor;
+
+  /// Optional splash radius.
+  final double? splashRadius;
+
+  /// Optional tap target size behavior.
+  final MaterialTapTargetSize? materialTapTargetSize;
+
+  /// Optional visual density.
+  final VisualDensity? visualDensity;
+
+  /// Optional focus node.
+  final FocusNode? focusNode;
+
+  /// Whether this tile should autofocus.
+  final bool autofocus;
+
+  /// Optional tile background color.
+  final Color? tileColor;
+
+  /// Optional selected tile background color.
+  final Color? selectedTileColor;
+
+  /// Optional haptic/acoustic feedback behavior.
+  final bool? enableFeedback;
+
+  /// Whether subtitle takes up three lines of height.
+  final bool isThreeLine;
+
+  /// Optional dense layout flag.
+  final bool? dense;
+
+  /// Optional padding around tile content.
+  final EdgeInsetsGeometry? contentPadding;
+
+  /// Optional tile shape.
+  final ShapeBorder? shape;
+
+  /// Control position relative to title.
+  final ListTileControlAffinity controlAffinity;
+
+  /// Optional title vertical alignment inside tile.
+  final ListTileTitleAlignment? titleAlignment;
 
   /// Returns the currently selected value.
   @override
@@ -63,9 +140,26 @@ class BlockRadioGroup<T> extends Block {
               final label = labelBuilder?.call(option) ?? option.toString();
               return RadioListTile<T>(
                 value: option,
-                dense: true,
-                visualDensity: VisualDensity.compact,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12.0),
+                mouseCursor: mouseCursor,
+                activeColor: activeColor,
+                fillColor: fillColor,
+                hoverColor: hoverColor,
+                overlayColor: overlayColor,
+                splashRadius: splashRadius,
+                materialTapTargetSize: materialTapTargetSize,
+                visualDensity: visualDensity,
+                focusNode: focusNode,
+                autofocus: autofocus,
+                tileColor: tileColor,
+                selectedTileColor: selectedTileColor,
+                enableFeedback: enableFeedback,
+                isThreeLine: isThreeLine,
+                dense: dense,
+                contentPadding: contentPadding,
+                shape: shape,
+                controlAffinity: controlAffinity,
+                titleAlignment: titleAlignment,
+                selected: selected,
                 title: itemBuilder != null
                     ? itemBuilder!(option, selected)
                     : Text(label,

@@ -1,5 +1,6 @@
 import 'package:block_dialog/src/utils/position_resolver.dart';
 import 'package:block_dialog/src/layout/blocks/block.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -11,6 +12,7 @@ void main() {
         columnIndex: 0,
         columnCount: 1,
       ),
+      TextDirection.ltr,
     );
     expect(position, BlockPosition.full);
   });
@@ -24,6 +26,7 @@ void main() {
           columnIndex: 0,
           columnCount: 2,
         ),
+        TextDirection.ltr,
       ),
       BlockPosition.topLeft,
     );
@@ -36,6 +39,7 @@ void main() {
           columnIndex: 1,
           columnCount: 2,
         ),
+        TextDirection.ltr,
       ),
       BlockPosition.topRight,
     );
@@ -48,6 +52,7 @@ void main() {
           columnIndex: 0,
           columnCount: 2,
         ),
+        TextDirection.ltr,
       ),
       BlockPosition.bottomLeft,
     );
@@ -60,6 +65,7 @@ void main() {
           columnIndex: 1,
           columnCount: 2,
         ),
+        TextDirection.ltr,
       ),
       BlockPosition.bottomRight,
     );
@@ -74,6 +80,7 @@ void main() {
           columnIndex: 1,
           columnCount: 3,
         ),
+        TextDirection.ltr,
       ),
       BlockPosition.middle,
     );
@@ -86,6 +93,7 @@ void main() {
           columnIndex: 0,
           columnCount: 3,
         ),
+        TextDirection.ltr,
       ),
       BlockPosition.middleLeft,
     );
@@ -98,6 +106,7 @@ void main() {
           columnIndex: 2,
           columnCount: 3,
         ),
+        TextDirection.ltr,
       ),
       BlockPosition.middleRight,
     );

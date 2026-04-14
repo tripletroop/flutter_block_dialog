@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 
 class BlockSpacer extends Block {
   /// Spacer block for vertical gaps inside dialogs.
-  BlockSpacer({super.flex = 1, super.override, required double height})
+  BlockSpacer(
+      {super.flex = 1, super.override, required double height, super.blockTag})
       : super(minHeight: height);
 
   /// Builds an empty box with the configured height.

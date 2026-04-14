@@ -1,3 +1,18 @@
+## [1.1.0]
+
+### Added
+- Support for `initialValue` in `BlockInputField`
+- New configuration options in `DialogConfig`:
+  - `maxWidth`
+  - `maxHeight`
+  - `childrenPadding`
+  - `textDirection`
+- Ability for individual blocks to override default padding
+- Ability to trigger shake animation on specific blocks from `onValidate` callback (useful for validation feedback)
+
+### Improved
+- Enhanced layout flexibility and responsiveness through new sizing and padding controls
+
 ## 1.0.1
 - Fixed BlockCustom decoration logic when `matchDialogTheme` is enabled/disabled.
 

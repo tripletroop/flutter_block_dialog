@@ -1,5 +1,6 @@
 import 'package:block_dialog/src/animations/block_animation_wrapper.dart';
 import 'package:block_dialog/src/layout/blocks/block_custom.dart';
+import 'package:block_dialog/src/animations/block_shake_wrapper.dart';
 import 'package:block_dialog/src/layout/blocks/block_spacer.dart';
 import 'package:block_dialog/src/models/block_override.dart';
 import 'package:block_dialog/src/theme/dialog_config.dart';
@@ -37,12 +38,24 @@ abstract class Block {
   /// Optional key used to store this block's value in [BlocksResult.values].
   final String? resultId;
 
+  /// Optional tag can be used to shake this block
+  final String? blockTag;
+
+  /// Increments to replay a one-shot shake animation on demand.
+  final ValueNotifier<int> _shakeTick = ValueNotifier<int>(0);
+
   Block({
     required this.flex,
     this.resultId,
     this.override,
+    this.blockTag,
     this.minHeight = 50,
   }) : _position = override?.position;
+
+  /// Shake this block horizontally to attract attention.
+  void shake() {
+    _shakeTick.value = _shakeTick.value + 1;
+  }
 
   /// Build the widget content for this block.
   @protected
@@ -88,21 +101,27 @@ abstract class Block {
     BlockDialogController controller,
     DialogConfig configs,
   ) {
-    return AnimatedBlockWrapper(
-      position: override?.animationPosition ?? _position,
-      controller: controller.animation,
-      animation: override?.customAnimation ?? configs.blockAnimation,
-      child: Container(
-        width: double.infinity,
-        constraints: BoxConstraints(minHeight: minHeight),
-        decoration: _shouldAddDecoration()
-            ? DecorationBuilder.build(
-                borderRadius: borderRadius,
-                configs: configs,
-              )
-            : null,
-        child: buildContent(context, controller, configs),
-      ),
-    ).build(context);
+    return BlockShakeWrapper(
+      shakeTick: _shakeTick,
+      child: AnimatedBlockWrapper(
+        position: override?.animationPosition ?? _position,
+        animationController: controller.animation,
+        blockAnimation: override?.customAnimation ?? configs.blockAnimation,
+        child: Container(
+          width: double.infinity,
+          padding: override?.padding ?? configs.childsPadding,
+          constraints: BoxConstraints(minHeight: minHeight),
+          decoration: _shouldAddDecoration()
+              ? DecorationBuilder.build(
+                  borderRadius: borderRadius,
+                  configs: configs,
+                )
+              : null,
+          child: Directionality(
+              textDirection: configs.textDirection,
+              child: buildContent(context, controller, configs)),
+        ),
+      ).build(context),
+    );
   }
 }

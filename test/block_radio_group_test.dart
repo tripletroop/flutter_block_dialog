@@ -42,6 +42,7 @@ class _RadioHarnessState<T> extends State<_RadioHarness<T>>
     controller = BlockDialogController();
     controller.initialize(
       rows: rows,
+      textDirection: TextDirection.ltr,
       animationController: AnimationController(
         vsync: this,
         duration: const Duration(milliseconds: 200),
@@ -80,5 +81,4 @@ void main() {
 
     expect(selected, 'B');
   });
-
 }

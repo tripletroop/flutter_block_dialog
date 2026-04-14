@@ -49,6 +49,7 @@ class _BlockDialogHostState extends State<BlockDialogHost>
     _controller.initialize(
       rows: widget.rows,
       animationController: _animationController,
+      textDirection: widget.configs.textDirection,
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.animateIn();
@@ -148,6 +149,7 @@ class _BlockDialogHostState extends State<BlockDialogHost>
                               : DialogError(
                                   errorMessage: _errorMessage!,
                                   onClear: clearError,
+                                  width: widget.configs.maxWidth,
                                 ),
                         ),
                       ],

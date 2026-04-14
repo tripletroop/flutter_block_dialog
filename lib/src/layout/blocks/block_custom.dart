@@ -17,6 +17,7 @@ class BlockCustom extends Block {
     super.override,
     super.minHeight,
     super.resultId,
+    super.blockTag,
     this.resultBuilder,
     this.matchDialogTheme = true,
   }) : assert(
