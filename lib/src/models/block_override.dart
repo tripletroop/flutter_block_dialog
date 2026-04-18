@@ -19,5 +19,6 @@ class BlockOverride {
     this.position,
     this.animationPosition,
     this.customAnimation,
+    this.padding,
   });
 }

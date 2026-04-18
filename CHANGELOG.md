@@ -1,3 +1,14 @@
+## [1.1.1]
+
+### Fixed
+- Added missing `padding` parameter to `BlockOverride` constructor
+
+### Changed
+- Updated `BlockButton.onPressed` to use `FutureOr<void>` instead of `Function`
+- Updated `BlockValidation` to use `FutureOr<String?>`
+- Improved documentation to clarify async behavior and loading handling
+
+
 ## [1.1.0]
 
 ### Added

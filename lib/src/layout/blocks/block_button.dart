@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:block_dialog/src/layout/blocks/block.dart';
 import 'package:block_dialog/src/models/blocks_result.dart';
 import 'package:block_dialog/src/theme/dialog_config.dart';
@@ -5,7 +7,7 @@ import 'package:block_dialog/src/core/block_dialog_controller.dart';
 import 'package:block_dialog/src/utils/block_shaker.dart';
 import 'package:flutter/material.dart';
 
-typedef BlockValidation = Future<String?> Function(
+typedef BlockValidation = FutureOr<String?> Function(
     BlocksResult result, BlockShaker blockShaker);
 
 class BlockButton extends Block {
@@ -41,9 +43,13 @@ class BlockButton extends Block {
   final bool closeOnPress;
 
   /// Called after validation when the button is pressed.
-  final Future<void> Function(BlocksResult result)? onPressed;
+  /// Supports both synchronous and asynchronous callbacks.
+  /// If a Future is returned, a loading indicator is shown until completion.
+  final FutureOr<void> Function(BlocksResult result)? onPressed;
 
   /// Optional validation callback; return an error to show it or null if all valid.
+  /// Supports both synchronous and asynchronous callbacks.
+  /// If a Future is returned, a loading indicator is shown until completion.
   final BlockValidation? onValidate;
 
   final ValueNotifier<bool> _loading = ValueNotifier(false);
