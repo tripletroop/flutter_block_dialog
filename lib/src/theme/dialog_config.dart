@@ -34,7 +34,8 @@ class DialogConfig {
   final TextDirection textDirection;
 
   /// Default padding for blocks without individual padding.
-  final EdgeInsetsGeometry childsPadding;
+  /// doesn't affect BlockButton to not mess the pressed background color
+  final EdgeInsetsGeometry childrenPadding;
 
   /// Optional fixed width for the dialog content. Default is double.infinity (match parent).
   final double? maxWidth;
@@ -53,7 +54,7 @@ class DialogConfig {
     this.maxWidth,
     this.maxHeight,
     this.textDirection = TextDirection.ltr,
-    this.childsPadding = const EdgeInsets.all(5),
+    this.childrenPadding = const EdgeInsets.all(5),
     this.animationDuration = const Duration(milliseconds: 400),
     this.blockAnimation = const SlideBlockAnimation(),
     this.barrierColor = const Color(0xB3000000),

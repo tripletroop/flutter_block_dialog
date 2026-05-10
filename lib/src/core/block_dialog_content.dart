@@ -24,10 +24,16 @@ class BlockDialogContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final maxHeight = MediaQuery.of(context).size.height * 0.8;
+    final mediaQuery = MediaQuery.of(context);
+    final availableHeight =
+        (mediaQuery.size.height - mediaQuery.viewInsets.bottom)
+            .clamp(0.0, double.infinity);
+    final maxHeight = availableHeight * 0.8;
+    final effectiveMaxHeight =
+        (configs.maxHeight ?? maxHeight).clamp(0.0, availableHeight);
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxHeight: configs.maxHeight ?? maxHeight,
+        maxHeight: effectiveMaxHeight,
         maxWidth: configs.maxWidth ?? double.infinity,
       ),
       child: SingleChildScrollView(

@@ -29,7 +29,7 @@ class ExampleHome extends StatelessWidget {
       context,
       configs: DialogConfig(
         blockAnimation: BlockAnimation.slide(),
-        childsPadding: EdgeInsetsGeometry.all(5),
+        childrenPadding: EdgeInsetsGeometry.all(5),
         textDirection: TextDirection.rtl,
       ),
       rows: [
@@ -72,6 +72,7 @@ class ExampleHome extends StatelessWidget {
           blocks: [
             BlockInputField(
               resultId: 'name',
+              blockTag: 'nameInput',
               override: BlockOverride(
                 animationPosition: BlockPosition.middleRight,
               ),
@@ -112,22 +113,35 @@ class ExampleHome extends StatelessWidget {
         ),
         BlockRow(
           blocks: [
-            BlockText(
-              text: 'Left',
+            BlockButton(
+              label: 'Add N',
               minHeight: 50,
-              style: Theme.of(context).textTheme.bodyMedium,
+              closeOnPress: false,
+              onPressed: (result, controller) {
+                final nameInputField =
+                    controller.getBlockByTag('nameInput') as BlockInputField;
+                nameInputField.editingController.text += 'N';
+              },
             ),
-            BlockText(
-              text: 'Middle',
+            BlockButton(
+              label: 'Clear',
               minHeight: 50,
-              blockTag: 'middleText',
-              flex: 2,
-              style: Theme.of(context).textTheme.bodyMedium,
+              closeOnPress: false,
+              onPressed: (result, controller) {
+                final nameInputField =
+                    controller.getBlockByTag('nameInput') as BlockInputField;
+                nameInputField.editingController.text = '';
+              },
             ),
-            BlockText(
-              text: 'Right',
+            BlockButton(
+              label: 'Right',
               minHeight: 50,
-              style: Theme.of(context).textTheme.bodyMedium,
+              closeOnPress: false,
+              onPressed: (result, controller) {
+                final nameInputField =
+                    controller.getBlockByTag('nameInput') as BlockInputField;
+                nameInputField.editingController.text += 'R';
+              },
             ),
           ],
         ),
@@ -135,7 +149,7 @@ class ExampleHome extends StatelessWidget {
           blocks: [
             BlockButton(
               label: 'Submit',
-              onValidate: (result, blockShaker) async {
+              onValidate: (result, blockShaker, controller) async {
                 blockShaker.shakeBlock('middleText');
                 final name = result.values['name'] as String?;
                 if (name == null || name.isEmpty) {
@@ -147,7 +161,7 @@ class ExampleHome extends StatelessWidget {
                 }
                 return null;
               },
-              onPressed: (result) async {
+              onPressed: (result, controller) async {
                 await Future.delayed(
                   const Duration(milliseconds: 1000),
                 ); // Simulate a network call

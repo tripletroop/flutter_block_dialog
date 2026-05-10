@@ -7,8 +7,10 @@ import 'package:block_dialog/src/core/block_dialog_controller.dart';
 import 'package:block_dialog/src/utils/block_shaker.dart';
 import 'package:flutter/material.dart';
 
-typedef BlockValidation = FutureOr<String?> Function(
-    BlocksResult result, BlockShaker blockShaker);
+typedef BlockValidation = FutureOr<String?> Function(BlocksResult result,
+    BlockShaker blockShaker, BlockDialogController controller);
+typedef BlockPressedCallback = FutureOr<void> Function(
+    BlocksResult result, BlockDialogController controller);
 
 class BlockButton extends Block {
   /// Button block that can close the dialog and return a payload.
@@ -36,7 +38,7 @@ class BlockButton extends Block {
   /// Optional payload passed back with the [BlocksResult].
   final Object? payload;
 
-  /// Whether the button is interactable.
+  /// Whether the button is intractable.
   final bool enabled;
 
   /// Whether to close the dialog when pressed.
@@ -45,7 +47,7 @@ class BlockButton extends Block {
   /// Called after validation when the button is pressed.
   /// Supports both synchronous and asynchronous callbacks.
   /// If a Future is returned, a loading indicator is shown until completion.
-  final FutureOr<void> Function(BlocksResult result)? onPressed;
+  final BlockPressedCallback? onPressed;
 
   /// Optional validation callback; return an error to show it or null if all valid.
   /// Supports both synchronous and asynchronous callbacks.
@@ -123,14 +125,15 @@ class BlockButton extends Block {
     final result = controller.collectResults(payload: payload);
 
     // Validation
-    final error = await onValidate?.call(result, controller.blockShaker);
+    final error =
+        await onValidate?.call(result, controller.blockShaker, controller);
     if (error != null) {
       controller.onError?.call(error);
       _loading.value = false;
       return;
     }
 
-    await onPressed?.call(result);
+    await onPressed?.call(result, controller);
     if (closeOnPress) {
       await controller.animateOut(result);
     }

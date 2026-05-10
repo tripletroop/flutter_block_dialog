@@ -19,7 +19,9 @@ class _TestApp extends StatelessWidget {
                     BlockText(text: 'Hello'),
                   ]),
                   BlockRow(blocks: [
-                    BlockButton(label: 'Close', onPressed: (_) async {}),
+                    BlockButton(
+                        label: 'Close',
+                        onPressed: (result, controller) async {}),
                   ]),
                 ],
               );

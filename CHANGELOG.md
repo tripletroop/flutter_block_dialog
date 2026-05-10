@@ -1,3 +1,14 @@
+## 1.2.0
+
+### Added
+- Added `getBlockByTag` to `BlockDialogController` to allow accessing blocks from anywhere using the controller.
+- `BlockButton.onValidate` and `BlockButton.onPressed` now return the dialog controller instance for easier access to other blocks during interactions.
+
+### Fixed
+- Fixed `RenderFlex` overflow issues when the software keyboard pushes the dialog layout.
+- Fixed `DialogConfig` children padding affecting `DialogButton` background coloring on press states.
+
+
 ## [1.1.1]
 
 ### Fixed

@@ -78,6 +78,10 @@ class _BlockDialogHostState extends State<BlockDialogHost>
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final availableHeight =
+        (mediaQuery.size.height - mediaQuery.viewInsets.bottom)
+            .clamp(0.0, double.infinity);
     final barrierColor = widget.configs.barrierColor;
     final barrierAnimation = CurvedAnimation(
       parent: _animationController,
@@ -134,25 +138,30 @@ class _BlockDialogHostState extends State<BlockDialogHost>
                   minimum: const EdgeInsets.all(16),
                   child: Dialog(
                     backgroundColor: Colors.transparent,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        BlockDialogContent(
-                          rows: widget.rows,
-                          configs: widget.configs,
-                          controller: _controller,
-                        ),
-                        AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 250),
-                          child: _errorMessage == null
-                              ? SizedBox.shrink()
-                              : DialogError(
-                                  errorMessage: _errorMessage!,
-                                  onClear: clearError,
-                                  width: widget.configs.maxWidth,
-                                ),
-                        ),
-                      ],
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: availableHeight),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: BlockDialogContent(
+                              rows: widget.rows,
+                              configs: widget.configs,
+                              controller: _controller,
+                            ),
+                          ),
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 250),
+                            child: _errorMessage == null
+                                ? SizedBox.shrink()
+                                : DialogError(
+                                    errorMessage: _errorMessage!,
+                                    onClear: clearError,
+                                    width: widget.configs.maxWidth,
+                                  ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

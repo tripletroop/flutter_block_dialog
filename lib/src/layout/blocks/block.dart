@@ -1,4 +1,5 @@
 import 'package:block_dialog/src/animations/block_animation_wrapper.dart';
+import 'package:block_dialog/src/layout/blocks/block_button.dart';
 import 'package:block_dialog/src/layout/blocks/block_custom.dart';
 import 'package:block_dialog/src/animations/block_shake_wrapper.dart';
 import 'package:block_dialog/src/layout/blocks/block_spacer.dart';
@@ -109,7 +110,9 @@ abstract class Block {
         blockAnimation: override?.customAnimation ?? configs.blockAnimation,
         child: Container(
           width: double.infinity,
-          padding: override?.padding ?? configs.childsPadding,
+          padding: this is BlockButton
+              ? EdgeInsetsGeometry.zero
+              : override?.padding ?? configs.childrenPadding,
           constraints: BoxConstraints(minHeight: minHeight),
           decoration: _shouldAddDecoration()
               ? DecorationBuilder.build(

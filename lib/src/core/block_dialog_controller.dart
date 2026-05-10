@@ -106,6 +106,13 @@ class BlockDialogController {
     );
   }
 
+  Block getBlockByTag(String tag) {
+    return _blocks.firstWhere(
+      (block) => block.blockTag == tag,
+      orElse: () => throw ArgumentError('No block found with tag: $tag'),
+    );
+  }
+
   AnimationController? get animation => _animation;
 
   /// Play the animate-in sequence.
