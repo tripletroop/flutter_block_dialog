@@ -31,17 +31,26 @@ class DialogConfig {
   final Color barrierColor;
 
   /// Text direction for block content (LTR or RTL).
-  final TextDirection textDirection;
+  final TextDirection? textDirection;
 
   /// Default padding for blocks without individual padding.
   /// doesn't affect BlockButton to not mess the pressed background color
   final EdgeInsetsGeometry childrenPadding;
 
-  /// Optional fixed width for the dialog content. Default is double.infinity (match parent).
-  final double? maxWidth;
+  /// Optional fixed width for the dialog content. Default is screen width * 0.8
+  final double? width;
 
   /// Optional fixed height for the dialog content. Default is screen height * 0.8
   final double? maxHeight;
+
+  /// Optional default text style for all texts in all supported block types.
+  final TextStyle? textStyle;
+
+  /// Default minimum height for blocks. Default is 50.
+  /// Default will be used for Block types except
+  /// BlockText with isDialogTitle = false and it is the only block in its row
+  ///  will have a default minimum height of (defaultMinBlockHeight * 2)
+  final double defaultMinBlockHeight;
 
   /// Create a new configuration set for the dialog.
   const DialogConfig({
@@ -51,9 +60,11 @@ class DialogConfig {
     this.strokeWidth = 1.0,
     this.borderRadius = 20.0,
     this.blocksSpacing = 2.0,
-    this.maxWidth,
+    this.width,
+    this.textStyle,
     this.maxHeight,
-    this.textDirection = TextDirection.ltr,
+    this.textDirection,
+    this.defaultMinBlockHeight = 50.0,
     this.childrenPadding = const EdgeInsets.all(5),
     this.animationDuration = const Duration(milliseconds: 400),
     this.blockAnimation = const SlideBlockAnimation(),

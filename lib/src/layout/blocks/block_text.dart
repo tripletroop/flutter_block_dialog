@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 class BlockText extends Block {
   /// Text block for titles, body copy, or messages.
-  BlockText({
-    required this.text,
+  BlockText(
+    String text, {
     super.flex = 1,
     super.override,
     this.strutStyle,
@@ -21,12 +21,31 @@ class BlockText extends Block {
     this.textWidthBasis,
     this.textHeightBehavior,
     this.selectionColor,
-    super.minHeight = 100,
+    this.isDialogTitle = false,
+    this.dontExpand = false,
+    super.minHeight,
     super.blockTag,
     this.textAlign = TextAlign.center,
-  });
+  }) : _text = ValueNotifier<String>(text);
 
-  final String text;
+  final ValueNotifier<String> _text;
+
+  /// Current text value displayed by this block.
+  String get text => _text.value;
+
+  /// Update the displayed text and notify listeners.
+  void setText(String value) {
+    if (_text.value == value) return;
+    _text.value = value;
+  }
+
+  /// Whether this text block is the dialog title, which will affect affect default styling. and min height
+  final bool isDialogTitle;
+
+  /// we expand min height of the BlockText that follow below conditions
+  /// isDialogTitle is false and the row has only one block, then we expand the min height to 2x defaultMinBlockHeight
+  /// if dontExpand is true, then we don't expand the min height even if the above conditions are met
+  final bool dontExpand;
 
   /// Optional text style.
   final TextStyle? style;
@@ -74,21 +93,26 @@ class BlockText extends Block {
     DialogConfig configs,
   ) {
     return Center(
-      child: Text(
-        text,
-        strutStyle: strutStyle,
-        textAlign: textAlign,
-        textDirection: textDirection,
-        locale: locale,
-        softWrap: softWrap,
-        overflow: overflow,
-        textScaler: textScaler,
-        maxLines: maxLines,
-        semanticsLabel: semanticsLabel,
-        textWidthBasis: textWidthBasis,
-        textHeightBehavior: textHeightBehavior,
-        selectionColor: selectionColor,
-        style: style ?? const TextStyle(fontSize: 15),
+      child: ValueListenableBuilder<String>(
+        valueListenable: _text,
+        builder: (context, value, _) => Text(
+          value,
+          strutStyle: strutStyle,
+          textAlign: textAlign,
+          textDirection: textDirection,
+          locale: locale,
+          softWrap: softWrap,
+          overflow: overflow,
+          textScaler: textScaler,
+          maxLines: maxLines,
+          semanticsLabel: semanticsLabel,
+          textWidthBasis: textWidthBasis,
+          textHeightBehavior: textHeightBehavior,
+          selectionColor: selectionColor,
+          style: (configs.textStyle ?? TextStyle()).merge(isDialogTitle
+              ? (TextStyle(fontWeight: FontWeight.bold).merge(style))
+              : style),
+        ),
       ),
     );
   }

@@ -34,7 +34,7 @@ abstract class Block {
   BlockOverride? override;
 
   /// Minimum height for this block.
-  final double minHeight;
+  final double? minHeight;
 
   /// Optional key used to store this block's value in [BlocksResult.values].
   final String? resultId;
@@ -50,7 +50,7 @@ abstract class Block {
     this.resultId,
     this.override,
     this.blockTag,
-    this.minHeight = 50,
+    this.minHeight,
   }) : _position = override?.position;
 
   /// Shake this block horizontally to attract attention.
@@ -101,6 +101,7 @@ abstract class Block {
     BuildContext context,
     BlockDialogController controller,
     DialogConfig configs,
+    double blockMinHeight,
   ) {
     return BlockShakeWrapper(
       shakeTick: _shakeTick,
@@ -113,16 +114,21 @@ abstract class Block {
           padding: this is BlockButton
               ? EdgeInsetsGeometry.zero
               : override?.padding ?? configs.childrenPadding,
-          constraints: BoxConstraints(minHeight: minHeight),
+          constraints: BoxConstraints(minHeight: blockMinHeight),
           decoration: _shouldAddDecoration()
               ? DecorationBuilder.build(
                   borderRadius: borderRadius,
                   configs: configs,
                 )
               : null,
-          child: Directionality(
-              textDirection: configs.textDirection,
-              child: buildContent(context, controller, configs)),
+          child: Builder(builder: (context) {
+            if (configs.textDirection != null) {
+              return Directionality(
+                  textDirection: configs.textDirection!,
+                  child: buildContent(context, controller, configs));
+            }
+            return buildContent(context, controller, configs);
+          }),
         ),
       ).build(context),
     );

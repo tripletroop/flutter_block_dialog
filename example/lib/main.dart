@@ -24,123 +24,84 @@ class BlockDialogExampleApp extends StatelessWidget {
 class ExampleHome extends StatelessWidget {
   const ExampleHome({super.key});
 
-  void _showCustomBlockDialog(BuildContext context) {
-    BlockDialog.show<void>(
-      context,
-      configs: DialogConfig(
-        blockAnimation: BlockAnimation.slide(),
-        childrenPadding: EdgeInsetsGeometry.all(5),
-        textDirection: TextDirection.rtl,
-      ),
-      rows: [
-        BlockRow(
-          ignoreInPositionResolving: true,
-          blocks: [
-            BlockCustom(
-              minHeight: 550,
-              matchDialogTheme: false,
-              override: BlockOverride(
-                animationPosition: BlockPosition.top,
-                customAnimation: BlockAnimation.slide(distanceMultiplier: 2),
-              ),
-              resultBuilder: () => {'custom_banner_shown': true},
-              resultId: 'topBarBanner',
-              builder: (context, controller, configs) => Container(
+  // placeholder for a preloaded banner ad widget, which can be used in the dialog
+  BlockRow adRow(BuildContext context) {
+    return BlockRow(
+      ignoreInPositionResolving: true,
+      width: MediaQuery.of(context).size.width,
+      blocks: [
+        BlockCustom(
+          matchDialogTheme: false,
+          override: BlockOverride(
+            animationPosition: BlockPosition.top,
+            customAnimation: BlockAnimation.slide(distanceMultiplier: 2),
+          ),
+          builder: (context, dialogController, blockController, configs) =>
+              Container(
                 height: 50,
                 color: Colors.blue[50],
-                child: Center(
-                  child: Text(
-                    'Banner Ad Placeholder',
-                    style: TextStyle(color: Colors.blue[900]),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+                child: const Center(child: Text('Banner Ad Placeholder')),
               ),
-            ),
-          ],
         ),
+      ],
+    );
+  }
+
+  void showSimpleConfirmationDialog(BuildContext context) {
+    BlockDialog.show(
+      context,
+      rows: [
+        adRow(context),
+        BlockRow(blocks: [BlockText('Confirmation', isDialogTitle: true)]),
+        BlockRow(blocks: [BlockText('Are you sure?')]),
         BlockRow(
           blocks: [
-            BlockText(
-              text: 'User Form',
-              minHeight: 50,
-              style: Theme.of(context).textTheme.headlineSmall,
+            BlockButton(label: 'Cancel'),
+            BlockButton(
+              label: 'Confirm',
+              isPositive: true,
+              onPressed: (results, dialogController) =>
+                  showResult(context, 'Confirmed!'),
             ),
           ],
         ),
-        BlockRow(
-          blocks: [
-            BlockInputField(
-              resultId: 'name',
-              blockTag: 'nameInput',
-              override: BlockOverride(
-                animationPosition: BlockPosition.middleRight,
-              ),
-              hintText: 'Enter your name',
-              initialText: 'John Doe',
-            ),
-          ],
-        ),
+      ],
+    );
+  }
+
+  void showUseFormDialog(BuildContext context) {
+    BlockDialog.show(
+      context,
+      rows: [
+        adRow(context),
+        BlockRow(blocks: [BlockText('User Form', isDialogTitle: true)]),
         BlockRow(
           blocks: [
             BlockInputField(
               resultId: 'email',
-              override: BlockOverride(
-                animationPosition: BlockPosition.middleLeft,
-              ),
-              keyboardType: TextInputType.emailAddress,
-              hintText: 'Enter your email',
+              blockTag: 'emailInput',
+              hintText: 'Please enter your Email',
+            ),
+          ],
+        ),
+        BlockRow(
+          blocks: [
+            BlockInputField(
+              resultId: 'password',
+              blockTag: 'passwordInput',
+              hintText: 'Please enter your Password',
+              obscureText: true,
             ),
           ],
         ),
         BlockRow(
           blocks: [
             BlockRadioGroup<String>(
-              options: ['Male', 'Female'],
-              resultId: 'gender',
-            ),
-          ],
-        ),
-        BlockRow(
-          blocks: [
-            BlockCheckbox(
-              resultId: 'subscribe',
-              initialValue: false,
-              label: 'Subscribe to newsletter',
-              override: BlockOverride(animationPosition: BlockPosition.middle),
-            ),
-          ],
-        ),
-        BlockRow(
-          blocks: [
-            BlockButton(
-              label: 'Add N',
-              minHeight: 50,
-              closeOnPress: false,
-              onPressed: (result, controller) {
-                final nameInputField =
-                    controller.getBlockByTag('nameInput') as BlockInputField;
-                nameInputField.editingController.text += 'N';
-              },
-            ),
-            BlockButton(
-              label: 'Clear',
-              minHeight: 50,
-              closeOnPress: false,
-              onPressed: (result, controller) {
-                final nameInputField =
-                    controller.getBlockByTag('nameInput') as BlockInputField;
-                nameInputField.editingController.text = '';
-              },
-            ),
-            BlockButton(
-              label: 'Right',
-              minHeight: 50,
-              closeOnPress: false,
-              onPressed: (result, controller) {
-                final nameInputField =
-                    controller.getBlockByTag('nameInput') as BlockInputField;
-                nameInputField.editingController.text += 'R';
+              resultId: 'switch',
+              options: ['Log In', 'Sign Up'],
+              initialValue: 'Log In',
+              onChanged: (value, controller) {
+                controller.setBlockButtonLabel('button', value);
               },
             ),
           ],
@@ -148,33 +109,38 @@ class ExampleHome extends StatelessWidget {
         BlockRow(
           blocks: [
             BlockButton(
-              label: 'Submit',
-              onValidate: (result, blockShaker, controller) async {
-                blockShaker.shakeBlock('middleText');
-                final name = result.values['name'] as String?;
-                if (name == null || name.isEmpty) {
-                  return 'Name cannot be empty.';
+              label: 'Log In',
+              blockTag: 'button',
+              isPositive: true,
+              onPressedWithError: (results, dialogController) {
+                final email = results.get('email');
+                final password = results.get('password');
+                if (email == null || email.isEmpty) {
+                  dialogController.shakeBlock('emailInput');
+                  dialogController.setBlockInputFieldErrorText(
+                    'emailInput',
+                    'Email is required',
+                  );
+                  return 'Email is required';
                 }
-                final email = result.values['email'] as String?;
-                if (email == null || !email.contains('@')) {
-                  return 'Please enter a valid email address.';
+                if (password == null || password.isEmpty) {
+                  dialogController.shakeBlock('passwordInput');
+                  dialogController.setBlockInputFieldErrorText(
+                    'passwordInput',
+                    'Password is required',
+                  );
+                  return 'Password is required';
                 }
+                if (password.length < 6) {
+                  dialogController.shakeBlock('passwordInput');
+                  dialogController.setBlockInputFieldErrorText(
+                    'passwordInput',
+                    'Password must be at least 6 characters',
+                  );
+                  return 'Password must be at least 6 characters';
+                }
+                showResult(context, 'Email: $email\nPassword: $password');
                 return null;
-              },
-              onPressed: (result, controller) async {
-                await Future.delayed(
-                  const Duration(milliseconds: 1000),
-                ); // Simulate a network call
-                final name = result.values['name'];
-                final email = result.values['email'];
-                final subscribe = result.values['subscribe'];
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Name=$name\nEmail=$email\nSubscribe=$subscribe',
-                    ),
-                  ),
-                );
               },
             ),
           ],
@@ -183,23 +149,28 @@ class ExampleHome extends StatelessWidget {
     );
   }
 
+  void showResult(BuildContext context, String result) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Block Dialog Example')),
       body: SafeArea(
-        child: Container(
-          child: Column(
-            children: [
-              Spacer(),
-              Center(
-                child: ElevatedButton(
-                  child: const Text('Show Dialog'),
-                  onPressed: () => _showCustomBlockDialog(context),
-                ),
-              ),
-            ],
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              child: const Text('Simple Confirmation Dialog'),
+              onPressed: () => showSimpleConfirmationDialog(context),
+            ),
+            ElevatedButton(
+              child: const Text('User Form Dialog'),
+              onPressed: () => showUseFormDialog(context),
+            ),
+          ],
         ),
       ),
     );

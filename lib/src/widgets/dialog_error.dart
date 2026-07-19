@@ -18,7 +18,7 @@ class DialogError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width ?? double.infinity,
+      width: width ?? MediaQuery.of(context).size.width * 0.8,
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       margin: const EdgeInsets.only(top: 4),
       decoration: BoxDecoration(

@@ -27,7 +27,7 @@ class BlocksResult<T> {
   final T? payload;
 
   /// Typed getter for a value stored under [resultKey].
-  V get<V>({required String resultKey}) {
+  V get<V>(String resultKey) {
     final value = values[resultKey];
     assert(
       value is V,

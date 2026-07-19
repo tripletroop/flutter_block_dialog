@@ -7,7 +7,7 @@ class BlockCheckbox extends Block {
   /// Checkbox block that stores a boolean value.
   BlockCheckbox({
     required String resultId,
-    required this.label,
+    this.label,
     this.onChanged,
     this.mouseCursor,
     this.activeColor,
@@ -23,7 +23,7 @@ class BlockCheckbox extends Block {
     this.shape,
     this.side,
     this.isError = false,
-    this.enabled,
+    bool? enabled,
     this.tileColor,
     this.title,
     this.subtitle,
@@ -46,21 +46,50 @@ class BlockCheckbox extends Block {
     this.checkboxScaleFactor = 1.0,
     this.titleAlignment,
     this.internalAddSemanticForOnTap = false,
+    this.textStyle,
     super.override,
     super.blockTag,
     bool? initialValue = false,
     super.flex = 1,
     super.minHeight,
   })  : _notifier = ValueNotifier<bool?>(initialValue),
+        _enabled = ValueNotifier<bool?>(enabled),
         assert(tristate || initialValue != null,
             'initialValue cannot be null when tristate is false'),
         assert(resultId.isNotEmpty, 'resultId must not be empty'),
+        assert(title != null || label != null,
+            'Either title or label must be provided'),
         super(resultId: resultId);
 
-  final String label;
+  final String? label;
   final ValueNotifier<bool?> _notifier;
+  final ValueNotifier<bool?> _enabled;
 
-  final ValueChanged<bool?>? onChanged;
+  /// Current checked value.
+  bool? get value => _notifier.value;
+
+  /// Current enabled value. Null means default platform behavior.
+  bool? get enabled => _enabled.value;
+
+  /// Update checked value and notify listeners.
+  void setValue(bool? value) {
+    if (!tristate && value == null) return;
+    if (_notifier.value == value) return;
+    _notifier.value = value;
+  }
+
+  /// Toggle the checked value and notify listeners.
+  void toggleValue() {
+    setValue(!(value ?? false));
+  }
+
+  /// Enable or disable this checkbox.
+  void setEnabled(bool? value) {
+    if (_enabled.value == value) return;
+    _enabled.value = value;
+  }
+
+  final void Function(bool? value, BlockDialogController controller)? onChanged;
   final MouseCursor? mouseCursor;
   final Color? activeColor;
   final WidgetStateProperty<Color?>? fillColor;
@@ -75,7 +104,6 @@ class BlockCheckbox extends Block {
   final ShapeBorder? shape;
   final BorderSide? side;
   final bool isError;
-  final bool? enabled;
   final Color? tileColor;
   final Widget? title;
   final Widget? subtitle;
@@ -98,6 +126,7 @@ class BlockCheckbox extends Block {
   final double checkboxScaleFactor;
   final ListTileTitleAlignment? titleAlignment;
   final bool internalAddSemanticForOnTap;
+  final TextStyle? textStyle;
 
   /// Returns the current checked state.
   @override
@@ -111,49 +140,58 @@ class BlockCheckbox extends Block {
   ) {
     return ValueListenableBuilder<bool?>(
       valueListenable: _notifier,
-      builder: (context, value, _) => CheckboxListTile(
-        value: value,
-        onChanged: (v) {
-          _notifier.value = v;
-          onChanged?.call(v);
-        },
-        mouseCursor: mouseCursor,
-        activeColor: activeColor,
-        fillColor: fillColor,
-        checkColor: checkColor,
-        hoverColor: hoverColor,
-        overlayColor: overlayColor,
-        splashRadius: splashRadius,
-        materialTapTargetSize: materialTapTargetSize,
-        visualDensity: visualDensity,
-        focusNode: focusNode,
-        autofocus: autofocus,
-        shape: shape,
-        side: side,
-        isError: isError,
-        enabled: enabled,
-        tileColor: tileColor,
-        title: title ?? Text(label, style: const TextStyle(fontSize: 15)),
-        subtitle: subtitle,
-        isThreeLine: isThreeLine,
-        dense: dense,
-        secondary: secondary,
-        selected: selected,
-        controlAffinity: controlAffinity,
-        contentPadding: contentPadding,
-        tristate: tristate,
-        checkboxShape: checkboxShape,
-        selectedTileColor: selectedTileColor,
-        onFocusChange: onFocusChange,
-        enableFeedback: enableFeedback,
-        horizontalTitleGap: horizontalTitleGap,
-        minVerticalPadding: minVerticalPadding,
-        minLeadingWidth: minLeadingWidth,
-        minTileHeight: minTileHeight,
-        checkboxSemanticLabel: checkboxSemanticLabel,
-        checkboxScaleFactor: checkboxScaleFactor,
-        titleAlignment: titleAlignment,
-        internalAddSemanticForOnTap: internalAddSemanticForOnTap,
+      builder: (context, value, _) => ValueListenableBuilder<bool?>(
+        valueListenable: _enabled,
+        builder: (context, enabledValue, __) => CheckboxListTile(
+          value: value,
+          onChanged: (v) {
+            _notifier.value = v;
+            onChanged?.call(v, controller);
+          },
+          mouseCursor: mouseCursor,
+          activeColor: activeColor,
+          fillColor: fillColor,
+          checkColor: checkColor,
+          hoverColor: hoverColor,
+          overlayColor: overlayColor,
+          splashRadius: splashRadius,
+          materialTapTargetSize: materialTapTargetSize,
+          visualDensity: visualDensity,
+          focusNode: focusNode,
+          autofocus: autofocus,
+          shape: shape,
+          side: side,
+          isError: isError,
+          enabled: enabledValue,
+          tileColor: tileColor,
+          title: title ??
+              Text(
+                label!,
+                style: (configs.textStyle ?? TextStyle()).merge(
+                    TextStyle(color: enabledValue == false ? Colors.grey : null)
+                        .merge(textStyle)),
+              ),
+          subtitle: subtitle,
+          isThreeLine: isThreeLine,
+          dense: dense,
+          secondary: secondary,
+          selected: selected,
+          controlAffinity: controlAffinity,
+          contentPadding: contentPadding,
+          tristate: tristate,
+          checkboxShape: checkboxShape,
+          selectedTileColor: selectedTileColor,
+          onFocusChange: onFocusChange,
+          enableFeedback: enableFeedback,
+          horizontalTitleGap: horizontalTitleGap,
+          minVerticalPadding: minVerticalPadding,
+          minLeadingWidth: minLeadingWidth,
+          minTileHeight: minTileHeight,
+          checkboxSemanticLabel: checkboxSemanticLabel,
+          checkboxScaleFactor: checkboxScaleFactor,
+          titleAlignment: titleAlignment,
+          internalAddSemanticForOnTap: internalAddSemanticForOnTap,
+        ),
       ),
     );
   }

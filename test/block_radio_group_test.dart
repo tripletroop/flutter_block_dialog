@@ -31,15 +31,16 @@ class _RadioHarnessState<T> extends State<_RadioHarness<T>>
   @override
   void initState() {
     super.initState();
-    final radio = BlockRadioGroup<T>(
-      resultId: 'choice',
-      options: widget.options,
-      onChanged: widget.onChanged,
-    );
-    rows = [
-      BlockRow(blocks: [radio]),
-    ];
     controller = BlockDialogController();
+    rows = [
+      BlockRow(blocks: [
+        BlockRadioGroup<T>(
+          resultId: 'choice',
+          options: widget.options,
+          onChanged: (value, controller) => widget.onChanged(value),
+        )
+      ]),
+    ];
     controller.initialize(
       rows: rows,
       textDirection: TextDirection.ltr,

@@ -26,7 +26,7 @@ class _ShakeHost extends StatelessWidget {
     return Builder(
       builder: (context) => KeyedSubtree(
         key: const ValueKey<String>('shake-host'),
-        child: block.build(context, controller, const DialogConfig()),
+        child: block.build(context, controller, const DialogConfig(), 50),
       ),
     );
   }

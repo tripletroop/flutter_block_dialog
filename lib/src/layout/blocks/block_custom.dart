@@ -5,44 +5,88 @@ import 'package:flutter/material.dart';
 
 typedef BlockCustomBuilder = Widget Function(
   BuildContext context,
-  BlockDialogController controller,
+  BlockDialogController dialogController,
+  BlockCustomController? blockController,
   DialogConfig configs,
 );
 
+/// Abstract base class for custom block controllers.
+/// Extend this class to create a controller for your BlockCustom widget.
+abstract class BlockCustomController extends ChangeNotifier {
+  bool _attached = false;
+
+  /// Build the result value for this custom block.
+  /// This is called when the dialog collects results.
+  dynamic buildResult();
+
+  late final BlockDialogController dialogController;
+  late final BuildContext context;
+
+  void _attachedDialogController(
+      BuildContext context, BlockDialogController dialogController) {
+    if (_attached) return;
+    this.dialogController = dialogController;
+    this.context = context;
+    _attached = true;
+  }
+}
+
 class BlockCustom extends Block {
-  /// Custom block for embedding any widget, with optional result capture.
+  /// Custom block for embedding any widget with a custom controller.
+  /// The blockController must extend [BlockCustomController] and implement [buildResult].
+  /// This allows you to:
+  /// - Manage custom state in your controller
+  /// - React to state changes with ValueListenableBuilder
+  /// - Access other blocks via the dialog controller
   BlockCustom({
+    this.blockController,
     required this.builder,
     super.flex = 1,
     super.override,
     super.minHeight,
     super.resultId,
     super.blockTag,
-    this.resultBuilder,
     this.matchDialogTheme = true,
   }) : assert(
-          resultBuilder == null || (resultId != null && resultId.isNotEmpty),
-          'BlockCustom with a resultBuilder must have a non-empty resultId.',
+          resultId == null || resultId.isEmpty || resultId.isNotEmpty,
+          'resultId must not be empty if provided.',
         );
 
+  /// The custom controller instance for this block.
+  /// Must extend [BlockCustomController] and implement [buildResult].
+  final BlockCustomController? blockController;
+
+  /// Builder function that creates the widget for this block.
+  /// Receives the controller and dialog config for customization.
   final BlockCustomBuilder builder;
 
   /// Whether to apply dialog background/stroke decoration to this block.
   final bool matchDialogTheme;
 
-  /// Optional callback to read a result value from your custom widget.
-  final dynamic Function()? resultBuilder;
-
-  /// Returns the custom value if provided.
+  /// Returns the result value by calling the blockController's buildResult method.
   @override
-  dynamic readValue() => resultBuilder != null ? resultBuilder!() : const {};
+  dynamic readValue() {
+    if (resultId == null || resultId!.isEmpty) {
+      return null;
+    }
+    return blockController?.buildResult();
+  }
 
   @override
   Widget buildContent(
     BuildContext context,
-    BlockDialogController controller,
+    BlockDialogController dialogController,
     DialogConfig configs,
   ) {
-    return builder(context, controller, configs);
+    if (blockController == null) {
+      return builder(context, dialogController, blockController, configs);
+    } else {
+      blockController!._attachedDialogController(context, dialogController);
+      return ListenableBuilder(
+        listenable: blockController!,
+        builder: (context, child) =>
+            builder(context, dialogController, blockController, configs),
+      );
+    }
   }
 }

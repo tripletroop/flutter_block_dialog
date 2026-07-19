@@ -135,8 +135,8 @@ class _BlockDialogHostState extends State<BlockDialogHost>
               ),
               Center(
                 child: SafeArea(
-                  minimum: const EdgeInsets.all(16),
                   child: Dialog(
+                    insetPadding: EdgeInsets.zero,
                     backgroundColor: Colors.transparent,
                     child: ConstrainedBox(
                       constraints: BoxConstraints(maxHeight: availableHeight),
@@ -157,7 +157,7 @@ class _BlockDialogHostState extends State<BlockDialogHost>
                                 : DialogError(
                                     errorMessage: _errorMessage!,
                                     onClear: clearError,
-                                    width: widget.configs.maxWidth,
+                                    width: widget.configs.width,
                                   ),
                           ),
                         ],

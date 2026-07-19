@@ -16,7 +16,7 @@ class _TestApp extends StatelessWidget {
                 context,
                 rows: [
                   BlockRow(blocks: [
-                    BlockText(text: 'Hello'),
+                    BlockText('Hello'),
                   ]),
                   BlockRow(blocks: [
                     BlockButton(

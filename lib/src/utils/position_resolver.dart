@@ -27,7 +27,7 @@ class PositionResolvingData {
 class PositionResolver {
   /// Resolve the [BlockPosition] based on grid coordinates.
   static BlockPosition resolve(
-      PositionResolvingData data, TextDirection textDirection) {
+      PositionResolvingData data, TextDirection? textDirection) {
     // Single block
     if (data.rowCount == 1 && data.columnCount == 1) {
       return BlockPosition.full;
@@ -39,8 +39,8 @@ class PositionResolver {
     final isEnd = data.columnIndex == data.columnCount - 1;
 
     // Adjust for text direction
-    final isLeft = textDirection == TextDirection.ltr ? isStart : isEnd;
-    final isRight = textDirection == TextDirection.ltr ? isEnd : isStart;
+    final isLeft = textDirection == TextDirection.rtl ? isEnd : isStart;
+    final isRight = textDirection == TextDirection.rtl ? isStart : isEnd;
 
     // Edges
     if (isTop && isLeft && isRight) return BlockPosition.top;
