@@ -16,6 +16,7 @@ class BlockButton extends Block {
   /// Button block that can close the dialog and return a payload.
   BlockButton({
     this.child,
+    this.loadingWidget,
     String? label,
     super.flex = 1,
     super.override,
@@ -28,38 +29,23 @@ class BlockButton extends Block {
     bool enabled = true,
     this.closeOnPress = true,
     this.isPositive = false,
-  })  : _label = ValueNotifier<String?>(label),
-        _enabled = ValueNotifier<bool>(enabled) {
-    assert(
-      label != null || child != null,
-      'Either label or child must be provided',
-    );
-    assert(
-      onPressed == null || onPressedWithError == null,
-      'Cant provide both onPressed and onPressedWithError, only one is allowed',
-    );
-  }
-
-  final ValueNotifier<String?> _label;
-  final ValueNotifier<bool> _enabled;
-
-  String? get label => _label.value;
-
-  bool get enabled => _enabled.value;
-
-  /// Update the button label and notify listeners.
-  void setLabel(String? value) {
-    if (_label.value == value) return;
-    _label.value = value;
-  }
-
-  /// Enable or disable interaction for this button.
-  void setEnabled(bool value) {
-    if (_enabled.value == value) return;
-    _enabled.value = value;
-  }
+  })  : assert(
+          label != null || child != null,
+          'Either label or child must be provided',
+        ),
+        assert(
+          onPressed == null || onPressedWithError == null,
+          'Cant provide both onPressed and onPressedWithError, only one is allowed',
+        ),
+        _notifier = ValueNotifier<ButtonChangeableValues>(
+          ButtonChangeableValues(
+            label: label,
+            enabled: enabled,
+          ),
+        );
 
   final Widget? child;
+  final Widget? loadingWidget;
   final TextStyle? textStyle;
 
   /// Optional payload passed back with the [BlocksResult].
@@ -79,12 +65,38 @@ class BlockButton extends Block {
   /// if an error is returned, the dialog will not close and the error will be passed to the [BlockDialogController.onError] callback.
   final BlockPressedCallback? onPressedWithError;
 
+  /// Called when the button is pressed.
+  /// Supports both synchronous and asynchronous callbacks.
+  /// If a Future is returned, a loading indicator is shown until completion.
   final BlockPressedVoidCallback? onPressed;
 
-  final ValueNotifier<bool> _loading = ValueNotifier(false);
-  final ValueNotifier<bool> _pressed = ValueNotifier(false);
+  final ValueNotifier<ButtonChangeableValues> _notifier;
 
-  bool get _isDisabled => !enabled || _loading.value;
+  String? get label => _notifier.value.label;
+
+  bool get enabled => _notifier.value.enabled;
+
+  /// Update the button label and notify listeners.
+  void setLabel(String? value) {
+    if (_notifier.value.label == value) return;
+    _notifier.value = _notifier.value.copyWith(label: value);
+  }
+
+  /// Enable or disable interaction for this button.
+  void setEnabled(bool value) {
+    if (_notifier.value.enabled == value) return;
+    _notifier.value = _notifier.value.copyWith(enabled: value);
+  }
+
+  void _setPressed(bool value) {
+    if (_notifier.value.pressed == value) return;
+    _notifier.value = _notifier.value.copyWith(pressed: value);
+  }
+
+  void _setLoading(bool value) {
+    if (_notifier.value.loading == value) return;
+    _notifier.value = _notifier.value.copyWith(loading: value);
+  }
 
   @override
   Widget buildContent(
@@ -92,63 +104,50 @@ class BlockButton extends Block {
     BlockDialogController controller,
     DialogConfig configs,
   ) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: _enabled,
-      builder: (_, __, ___) => ValueListenableBuilder<String?>(
-        valueListenable: _label,
-        builder: (_, currentLabel, ____) => ValueListenableBuilder<bool>(
-          valueListenable: _loading,
-          builder: (_, loading, _____) {
-            return ValueListenableBuilder<bool>(
-              valueListenable: _pressed,
-              builder: (_, pressed, ______) {
-                return GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTapDown: _isDisabled ? null : (_) => _pressed.value = true,
-                  onTapCancel: () => _pressed.value = false,
-                  onTapUp: (_) => _pressed.value = false,
-                  onTap: _isDisabled ? null : () => _handleTap(controller),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 120),
-                    curve: Curves.easeOut,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color:
-                          _backgroundColor(pressed: pressed, configs: configs),
-                      borderRadius: borderRadius.subtract(
-                        BorderRadius.circular(configs.strokeWidth),
+    return ValueListenableBuilder<ButtonChangeableValues>(
+      valueListenable: _notifier,
+      builder: (_, changeableValues, ___) {
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTapDown:
+              changeableValues.isDisabled ? null : (_) => _setPressed(true),
+          onTapCancel: () => _setPressed(false),
+          onTapUp: (_) => _setPressed(false),
+          onTap:
+              changeableValues.isDisabled ? null : () => _handleTap(controller),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 120),
+            curve: Curves.easeOut,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: _backgroundColor(
+                  pressed: changeableValues.pressed, configs: configs),
+              borderRadius: borderRadius.subtract(
+                BorderRadius.circular(configs.strokeWidth),
+              ),
+            ),
+            child: changeableValues.loading
+                ? (loadingWidget ??
+                    SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
                       ),
-                    ),
-                    child: loading
-                        ? SizedBox(
-                            width: 22,
-                            height: 22,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: _getTextColor(),
-                            ),
-                          )
-                        : currentLabel != null
-                            ? Text(
-                                currentLabel,
-                                style: (configs.textStyle ?? TextStyle()).merge(
-                                    TextStyle(
-                                            fontWeight: isPositive
-                                                ? FontWeight.bold
-                                                : null,
-                                            color: _isDisabled
-                                                ? Colors.grey
-                                                : null)
-                                        .merge(textStyle)),
-                              )
-                            : child,
-                  ),
-                );
-              },
-            );
-          },
-        ),
-      ),
+                    ))
+                : child ??
+                    (Text(
+                      changeableValues.label ?? '',
+                      style: (configs.textStyle ?? TextStyle()).merge(TextStyle(
+                              fontWeight: isPositive ? FontWeight.bold : null,
+                              color: changeableValues.isDisabled
+                                  ? Colors.grey
+                                  : null)
+                          .merge(textStyle)),
+                    )),
+          ),
+        );
+      },
     );
   }
 
@@ -160,13 +159,8 @@ class BlockButton extends Block {
     return configs.backgroundColor;
   }
 
-  Color? _getTextColor() {
-    if (_isDisabled) return Colors.grey.shade400;
-    return null;
-  }
-
   Future<void> _handleTap(BlockDialogController controller) async {
-    _loading.value = true;
+    _setLoading(true);
     final result = controller.collectResults(payload: payload);
     String? error;
     if (onPressedWithError != null) {
@@ -174,7 +168,7 @@ class BlockButton extends Block {
     } else {
       await onPressed?.call(result, controller);
     }
-    _loading.value = false;
+    _setLoading(false);
     if (error != null) {
       controller.onError?.call(error);
       return;
@@ -183,4 +177,34 @@ class BlockButton extends Block {
       await controller.animateOut(result);
     }
   }
+}
+
+class ButtonChangeableValues {
+  ButtonChangeableValues({
+    required this.label,
+    required this.enabled,
+    this.loading = false,
+    this.pressed = false,
+  });
+
+  final String? label;
+  final bool enabled;
+  final bool loading;
+  final bool pressed;
+
+  ButtonChangeableValues copyWith({
+    String? label,
+    bool? enabled,
+    bool? loading,
+    bool? pressed,
+  }) {
+    return ButtonChangeableValues(
+      label: label ?? this.label,
+      enabled: enabled ?? this.enabled,
+      loading: loading ?? this.loading,
+      pressed: pressed ?? this.pressed,
+    );
+  }
+
+  bool get isDisabled => !enabled || loading;
 }

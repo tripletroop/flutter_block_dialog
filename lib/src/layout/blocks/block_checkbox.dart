@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 class BlockCheckbox extends Block {
   /// Checkbox block that stores a boolean value.
   BlockCheckbox({
-    required String resultId,
     this.label,
     this.onChanged,
     this.mouseCursor,
@@ -23,7 +22,7 @@ class BlockCheckbox extends Block {
     this.shape,
     this.side,
     this.isError = false,
-    bool? enabled,
+    bool enabled = true,
     this.tileColor,
     this.title,
     this.subtitle,
@@ -52,42 +51,16 @@ class BlockCheckbox extends Block {
     bool? initialValue = false,
     super.flex = 1,
     super.minHeight,
-  })  : _notifier = ValueNotifier<bool?>(initialValue),
-        _enabled = ValueNotifier<bool?>(enabled),
+  })  : _notifier = ValueNotifier(CheckBoxChangeableValues(
+          value: initialValue,
+          enabled: enabled,
+        )),
         assert(tristate || initialValue != null,
             'initialValue cannot be null when tristate is false'),
-        assert(resultId.isNotEmpty, 'resultId must not be empty'),
         assert(title != null || label != null,
-            'Either title or label must be provided'),
-        super(resultId: resultId);
+            'Either title or label must be provided');
 
   final String? label;
-  final ValueNotifier<bool?> _notifier;
-  final ValueNotifier<bool?> _enabled;
-
-  /// Current checked value.
-  bool? get value => _notifier.value;
-
-  /// Current enabled value. Null means default platform behavior.
-  bool? get enabled => _enabled.value;
-
-  /// Update checked value and notify listeners.
-  void setValue(bool? value) {
-    if (!tristate && value == null) return;
-    if (_notifier.value == value) return;
-    _notifier.value = value;
-  }
-
-  /// Toggle the checked value and notify listeners.
-  void toggleValue() {
-    setValue(!(value ?? false));
-  }
-
-  /// Enable or disable this checkbox.
-  void setEnabled(bool? value) {
-    if (_enabled.value == value) return;
-    _enabled.value = value;
-  }
 
   final void Function(bool? value, BlockDialogController controller)? onChanged;
   final MouseCursor? mouseCursor;
@@ -128,6 +101,32 @@ class BlockCheckbox extends Block {
   final bool internalAddSemanticForOnTap;
   final TextStyle? textStyle;
 
+  final ValueNotifier<CheckBoxChangeableValues> _notifier;
+
+  /// Current checked value.
+  bool? get value => _notifier.value.value;
+
+  /// Current enabled value. Null means default platform behavior.
+  bool? get enabled => _notifier.value.enabled;
+
+  /// Update checked value and notify listeners.
+  void setValue(bool? value) {
+    if (!tristate && value == null) return;
+    if (_notifier.value.value == value) return;
+    _notifier.value = _notifier.value.copyWith(value: value);
+  }
+
+  /// Toggle the checked value and notify listeners.
+  void toggleValue() {
+    setValue(!(value ?? false));
+  }
+
+  /// Enable or disable this checkbox.
+  void setEnabled(bool? value) {
+    if (_notifier.value.enabled == value) return;
+    _notifier.value = _notifier.value.copyWith(enabled: value);
+  }
+
   /// Returns the current checked state.
   @override
   dynamic readValue() => _notifier.value;
@@ -138,14 +137,13 @@ class BlockCheckbox extends Block {
     BlockDialogController controller,
     DialogConfig configs,
   ) {
-    return ValueListenableBuilder<bool?>(
+    return ValueListenableBuilder<CheckBoxChangeableValues>(
       valueListenable: _notifier,
-      builder: (context, value, _) => ValueListenableBuilder<bool?>(
-        valueListenable: _enabled,
-        builder: (context, enabledValue, __) => CheckboxListTile(
-          value: value,
+      builder: (context, changeableValues, _) {
+        return CheckboxListTile(
+          value: changeableValues.value,
           onChanged: (v) {
-            _notifier.value = v;
+            setValue(v);
             onChanged?.call(v, controller);
           },
           mouseCursor: mouseCursor,
@@ -162,14 +160,16 @@ class BlockCheckbox extends Block {
           shape: shape,
           side: side,
           isError: isError,
-          enabled: enabledValue,
+          enabled: changeableValues.enabled,
           tileColor: tileColor,
           title: title ??
               Text(
                 label!,
-                style: (configs.textStyle ?? TextStyle()).merge(
-                    TextStyle(color: enabledValue == false ? Colors.grey : null)
-                        .merge(textStyle)),
+                style: (configs.textStyle ?? TextStyle()).merge(TextStyle(
+                        color: changeableValues.enabled == false
+                            ? Colors.grey
+                            : null)
+                    .merge(textStyle)),
               ),
           subtitle: subtitle,
           isThreeLine: isThreeLine,
@@ -191,8 +191,29 @@ class BlockCheckbox extends Block {
           checkboxScaleFactor: checkboxScaleFactor,
           titleAlignment: titleAlignment,
           internalAddSemanticForOnTap: internalAddSemanticForOnTap,
-        ),
-      ),
+        );
+      },
+    );
+  }
+}
+
+class CheckBoxChangeableValues {
+  CheckBoxChangeableValues({
+    required this.value,
+    required this.enabled,
+  });
+
+  // to support tristate, value can be null
+  final bool? value;
+  final bool enabled;
+
+  CheckBoxChangeableValues copyWith({
+    bool? value,
+    bool? enabled,
+  }) {
+    return CheckBoxChangeableValues(
+      value: value ?? this.value,
+      enabled: enabled ?? this.enabled,
     );
   }
 }

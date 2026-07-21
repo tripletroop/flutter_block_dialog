@@ -10,24 +10,26 @@ class _TestApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         body: Center(
-          child: ElevatedButton(
-            onPressed: () {
-              BlockDialog.show<void>(
-                context,
-                rows: [
-                  BlockRow(blocks: [
-                    BlockText('Hello'),
-                  ]),
-                  BlockRow(blocks: [
-                    BlockButton(
+          child: Builder(builder: (context) {
+            return ElevatedButton(
+              onPressed: () {
+                BlockDialog.show<void>(
+                  context,
+                  rows: [
+                    BlockRow(blocks: [
+                      BlockText('Hello'),
+                    ]),
+                    BlockRow(blocks: [
+                      BlockButton(
                         label: 'Close',
-                        onPressed: (result, controller) async {}),
-                  ]),
-                ],
-              );
-            },
-            child: const Text('Open'),
-          ),
+                      )
+                    ]),
+                  ],
+                );
+              },
+              child: const Text('Open'),
+            );
+          }),
         ),
       ),
     );
@@ -39,11 +41,12 @@ void main() {
     await tester.pumpWidget(const _TestApp());
 
     await tester.tap(find.text('Open'));
-    await tester.pumpAndSettle();
+    await tester.pumpAndSettle(const Duration(milliseconds: 600));
 
     expect(find.text('Hello'), findsOneWidget);
 
     await tester.tapAt(const Offset(10, 10));
+    // dialog closing animation duration is 400 milliseconds
     await tester.pumpAndSettle(const Duration(milliseconds: 600));
 
     expect(find.text('Hello'), findsNothing);

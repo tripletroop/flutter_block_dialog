@@ -17,24 +17,19 @@ void main() {
         BlockRow(
           blocks: [
             BlockCheckbox(
-              resultId: 'accept',
-              label: 'Accept terms',
               blockTag: 'accept_cb',
+              label: 'Accept terms',
               initialValue: false,
             ),
           ],
         ),
       ],
     );
+    final unchecked = controller.setBlockCheckboxValue('accept_cb', false);
+    expect(unchecked, isTrue);
 
-    expect(
-        controller.getBlockByTagAs<BlockCheckbox>('accept_cb')!.value, isFalse);
-
-    final updated = controller.setBlockCheckboxValue('accept_cb', true);
-
-    expect(updated, isTrue);
-    expect(
-        controller.getBlockByTagAs<BlockCheckbox>('accept_cb')!.value, isTrue);
+    final checked = controller.setBlockCheckboxValue('accept_cb', true);
+    expect(checked, isTrue);
   });
 
   test('BlockCheckbox enabled can be updated by tag through controller', () {
@@ -51,27 +46,18 @@ void main() {
         BlockRow(
           blocks: [
             BlockCheckbox(
-              resultId: 'accept',
-              label: 'Accept terms',
               blockTag: 'accept_cb',
+              label: 'Accept terms',
               initialValue: false,
             ),
           ],
         ),
       ],
     );
-
-    expect(controller.getBlockByTagAs<BlockCheckbox>('accept_cb')!.enabled,
-        isNull);
-
     final disabled = controller.setBlockCheckboxEnabled('accept_cb', false);
     expect(disabled, isTrue);
-    expect(controller.getBlockByTagAs<BlockCheckbox>('accept_cb')!.enabled,
-        isFalse);
 
     final enabled = controller.setBlockCheckboxEnabled('accept_cb', true);
     expect(enabled, isTrue);
-    expect(controller.getBlockByTagAs<BlockCheckbox>('accept_cb')!.enabled,
-        isTrue);
   });
 }

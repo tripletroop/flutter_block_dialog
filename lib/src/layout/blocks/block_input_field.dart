@@ -10,7 +10,6 @@ import 'package:flutter/services.dart';
 class BlockInputField extends Block {
   /// Text input block that stores the current text value.
   BlockInputField({
-    required String resultId,
     super.flex = 1,
     super.override,
     super.minHeight,
@@ -49,7 +48,7 @@ class BlockInputField extends Block {
     this.onSubmitted,
     this.onAppPrivateCommand,
     this.inputFormatters,
-    bool? enabled,
+    bool enabled = true,
     this.cursorWidth = 2.0,
     this.cursorHeight,
     this.cursorRadius,
@@ -79,12 +78,11 @@ class BlockInputField extends Block {
     this.canRequestFocus = true,
     this.spellCheckConfiguration,
     this.magnifierConfiguration,
-  })  : assert(resultId.isNotEmpty, 'resultId must not be empty'),
-        editingController = TextEditingController(text: initialText),
-        _readOnlyNotifier = ValueNotifier<bool>(readOnly),
-        _enabledNotifier = ValueNotifier<bool?>(enabled),
-        _errorTextNotifier = ValueNotifier<String?>(null),
-        super(resultId: resultId);
+  })  : editingController = TextEditingController(text: initialText),
+        _notifier = ValueNotifier(InputFieldChangeableValues(
+          readOnly: readOnly,
+          enabled: enabled,
+        ));
 
   static Widget _defaultContextMenuBuilder(
     BuildContext context,
@@ -96,63 +94,6 @@ class BlockInputField extends Block {
   }
 
   final TextEditingController editingController;
-  final ValueNotifier<bool> _readOnlyNotifier;
-  final ValueNotifier<bool?> _enabledNotifier;
-  final ValueNotifier<String?> _errorTextNotifier;
-
-  /// Current text value.
-  String get text => editingController.text;
-
-  /// Update the text at runtime.
-  void setText(String value) {
-    if (editingController.text == value) return;
-    editingController.text = value;
-  }
-
-  void appendText(String value) {
-    editingController.text += value;
-  }
-
-  /// Clear the input field.
-  void clear() {
-    editingController.clear();
-  }
-
-  /// Current read-only state.
-  bool get readOnly => _readOnlyNotifier.value;
-
-  /// Set read-only state at runtime.
-  void setReadOnly(bool value) {
-    if (_readOnlyNotifier.value == value) return;
-    _readOnlyNotifier.value = value;
-  }
-
-  /// Current error text.
-  String? get errorText => _errorTextNotifier.value;
-
-  /// Current enabled state.
-  bool? get enabled => _enabledNotifier.value;
-
-  /// Set enabled state at runtime.
-  void setEnabled(bool? value) {
-    if (enabled == value) return;
-    _enabledNotifier.value = value;
-  }
-
-  void setErrorText(String? errorText) {
-    if (this.errorText == errorText) return;
-    _errorTextNotifier.value = errorText;
-  }
-
-  /// Focus this input field.
-  void focus() {
-    focusNode?.requestFocus();
-  }
-
-  /// Unfocus this input field.
-  void unfocus() {
-    focusNode?.unfocus();
-  }
 
   /// Placeholder text.
   final String? hintText;
@@ -220,6 +161,62 @@ class BlockInputField extends Block {
   final SpellCheckConfiguration? spellCheckConfiguration;
   final TextMagnifierConfiguration? magnifierConfiguration;
 
+  final ValueNotifier<InputFieldChangeableValues> _notifier;
+
+  /// Current text value.
+  String get text => editingController.text;
+
+  /// Update the text at runtime.
+  void setText(String value) {
+    if (editingController.text == value) return;
+    editingController.text = value;
+  }
+
+  void appendText(String value) {
+    editingController.text += value;
+  }
+
+  /// Clear the input field.
+  void clear() {
+    editingController.clear();
+  }
+
+  /// Current read-only state.
+  bool get readOnly => _notifier.value.readOnly;
+
+  /// Set read-only state at runtime.
+  void setReadOnly(bool value) {
+    if (_notifier.value.readOnly == value) return;
+    _notifier.value = _notifier.value.copyWith(readOnly: value);
+  }
+
+  /// Current error text.
+  String? get errorText => _notifier.value.errorText;
+
+  /// Current enabled state.
+  bool get enabled => _notifier.value.enabled;
+
+  /// Set enabled state at runtime.
+  void setEnabled(bool value) {
+    if (_notifier.value.enabled == value) return;
+    _notifier.value = _notifier.value.copyWith(enabled: value);
+  }
+
+  void setErrorText(String? errorText) {
+    if (this.errorText == errorText) return;
+    _notifier.value = _notifier.value.copyWith(errorText: errorText);
+  }
+
+  /// Focus this input field.
+  void focus() {
+    focusNode?.requestFocus();
+  }
+
+  /// Unfocus this input field.
+  void unfocus() {
+    focusNode?.unfocus();
+  }
+
   /// Returns the current text value.
   @override
   dynamic readValue() => editingController.text;
@@ -230,93 +227,111 @@ class BlockInputField extends Block {
     BlockDialogController controller,
     DialogConfig configs,
   ) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: _readOnlyNotifier,
-      builder: (context, currentReadOnly, _) => ValueListenableBuilder<bool?>(
-        valueListenable: _enabledNotifier,
-        builder: (context, currentEnabled, __) =>
-            ValueListenableBuilder<String?>(
-          valueListenable: _errorTextNotifier,
-          builder: (context, currentErrorText, ___) => TextField(
-            controller: editingController,
-            focusNode: focusNode,
-            undoController: undoController,
-            decoration: decoration ??
-                InputDecoration(
-                  hintText: hintText,
-                  border: InputBorder.none,
-                  error:
-                      currentErrorText != null ? Text(currentErrorText) : null,
-                  isDense: true,
-                  contentPadding: const EdgeInsets.all(8.0),
-                ),
-            keyboardType: keyboardType,
-            textInputAction: textInputAction,
-            textCapitalization: textCapitalization,
-            style: (configs.textStyle ?? TextStyle()).merge(
-                TextStyle(color: currentEnabled == false ? Colors.grey : null)
-                    .merge(style)),
-            strutStyle: strutStyle,
-            textAlign: textAlign,
-            textAlignVertical: textAlignVertical,
-            textDirection: textDirection,
-            readOnly: currentReadOnly,
-            showCursor: showCursor,
-            autofocus: autofocus,
-            obscuringCharacter: obscuringCharacter,
-            obscureText: obscureText,
-            autocorrect: autocorrect,
-            smartDashesType: smartDashesType,
-            smartQuotesType: smartQuotesType,
-            enableSuggestions: enableSuggestions,
-            maxLines: maxLines,
-            minLines: minLines,
-            expands: expands,
-            maxLength: maxLength,
-            maxLengthEnforcement: maxLengthEnforcement,
-            onChanged: (value) {
-              setErrorText(null);
-              onChanged?.call(value, controller);
-            },
-            onTap: onTap,
-            onTapAlwaysCalled: onTapAlwaysCalled,
-            onEditingComplete: () => onEditingComplete?.call(controller),
-            onSubmitted: (value) => onSubmitted?.call(value, controller),
-            onAppPrivateCommand: onAppPrivateCommand,
-            inputFormatters: inputFormatters,
-            enabled: currentEnabled,
-            cursorWidth: cursorWidth,
-            cursorHeight: cursorHeight,
-            cursorRadius: cursorRadius,
-            cursorOpacityAnimates: cursorOpacityAnimates,
-            cursorColor: cursorColor,
-            cursorErrorColor: cursorErrorColor,
-            selectionHeightStyle: selectionHeightStyle,
-            selectionWidthStyle: selectionWidthStyle,
-            keyboardAppearance: keyboardAppearance,
-            scrollPadding: scrollPadding,
-            dragStartBehavior: dragStartBehavior,
-            enableInteractiveSelection: enableInteractiveSelection,
-            selectionControls: selectionControls,
-            onTapOutside: onTapOutside,
-            onTapUpOutside: onTapUpOutside,
-            mouseCursor: mouseCursor,
-            buildCounter: buildCounter,
-            scrollController: scrollController,
-            scrollPhysics: scrollPhysics,
-            autofillHints: autofillHints,
-            contentInsertionConfiguration: contentInsertionConfiguration,
-            clipBehavior: clipBehavior,
-            restorationId: restorationId,
-            stylusHandwritingEnabled: stylusHandwritingEnabled,
-            enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
-            contextMenuBuilder: contextMenuBuilder,
-            canRequestFocus: canRequestFocus,
-            spellCheckConfiguration: spellCheckConfiguration,
-            magnifierConfiguration: magnifierConfiguration,
-          ),
-        ),
-      ),
+    return ValueListenableBuilder<InputFieldChangeableValues>(
+      valueListenable: _notifier,
+      builder: (context, changeableValues, _) {
+        return TextField(
+          controller: editingController,
+          focusNode: focusNode,
+          undoController: undoController,
+          decoration: decoration ??
+              InputDecoration(
+                hintText: hintText,
+                border: InputBorder.none,
+                errorText: changeableValues.errorText,
+                isDense: true,
+                contentPadding: const EdgeInsets.all(8.0),
+              ),
+          keyboardType: keyboardType,
+          textInputAction: textInputAction,
+          textCapitalization: textCapitalization,
+          style: (configs.textStyle ?? TextStyle()).merge(TextStyle(
+                  color: changeableValues.enabled == false ? Colors.grey : null)
+              .merge(style)),
+          strutStyle: strutStyle,
+          textAlign: textAlign,
+          textAlignVertical: textAlignVertical,
+          textDirection: textDirection,
+          readOnly: changeableValues.readOnly,
+          showCursor: showCursor,
+          autofocus: autofocus,
+          obscuringCharacter: obscuringCharacter,
+          obscureText: obscureText,
+          autocorrect: autocorrect,
+          smartDashesType: smartDashesType,
+          smartQuotesType: smartQuotesType,
+          enableSuggestions: enableSuggestions,
+          maxLines: maxLines,
+          minLines: minLines,
+          expands: expands,
+          maxLength: maxLength,
+          maxLengthEnforcement: maxLengthEnforcement,
+          onChanged: (value) {
+            setErrorText(null);
+            onChanged?.call(value, controller);
+          },
+          onTap: onTap,
+          onTapAlwaysCalled: onTapAlwaysCalled,
+          onEditingComplete: () => onEditingComplete?.call(controller),
+          onSubmitted: (value) => onSubmitted?.call(value, controller),
+          onAppPrivateCommand: onAppPrivateCommand,
+          inputFormatters: inputFormatters,
+          enabled: changeableValues.enabled,
+          cursorWidth: cursorWidth,
+          cursorHeight: cursorHeight,
+          cursorRadius: cursorRadius,
+          cursorOpacityAnimates: cursorOpacityAnimates,
+          cursorColor: cursorColor,
+          cursorErrorColor: cursorErrorColor,
+          selectionHeightStyle: selectionHeightStyle,
+          selectionWidthStyle: selectionWidthStyle,
+          keyboardAppearance: keyboardAppearance,
+          scrollPadding: scrollPadding,
+          dragStartBehavior: dragStartBehavior,
+          enableInteractiveSelection: enableInteractiveSelection,
+          selectionControls: selectionControls,
+          onTapOutside: onTapOutside,
+          onTapUpOutside: onTapUpOutside,
+          mouseCursor: mouseCursor,
+          buildCounter: buildCounter,
+          scrollController: scrollController,
+          scrollPhysics: scrollPhysics,
+          autofillHints: autofillHints,
+          contentInsertionConfiguration: contentInsertionConfiguration,
+          clipBehavior: clipBehavior,
+          restorationId: restorationId,
+          stylusHandwritingEnabled: stylusHandwritingEnabled,
+          enableIMEPersonalizedLearning: enableIMEPersonalizedLearning,
+          contextMenuBuilder: contextMenuBuilder,
+          canRequestFocus: canRequestFocus,
+          spellCheckConfiguration: spellCheckConfiguration,
+          magnifierConfiguration: magnifierConfiguration,
+        );
+      },
+    );
+  }
+}
+
+class InputFieldChangeableValues {
+  InputFieldChangeableValues({
+    required this.readOnly,
+    required this.enabled,
+    this.errorText,
+  });
+
+  final bool readOnly;
+  final bool enabled;
+  final String? errorText;
+
+  InputFieldChangeableValues copyWith({
+    bool? readOnly,
+    bool? enabled,
+    String? errorText,
+  }) {
+    return InputFieldChangeableValues(
+      readOnly: readOnly ?? this.readOnly,
+      enabled: enabled ?? this.enabled,
+      errorText: errorText ?? this.errorText,
     );
   }
 }

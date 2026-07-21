@@ -19,6 +19,7 @@ class _StretchHarnessState extends State<_StretchHarness>
     super.initState();
     rows = [
       BlockRow(
+        matchBlocksHeight: true,
         blocks: [
           BlockCustom(
             minHeight: 40,
@@ -82,7 +83,7 @@ class _StretchHarnessState extends State<_StretchHarness>
 
 void main() {
   testWidgets(
-    'BlockDialogContent stretches shorter blocks to match the tallest block',
+    'BlockDialogContent stretches shorter blocks to match the tallest block when matchBlocksHeight is true',
     (tester) async {
       await tester.pumpWidget(const _StretchHarness());
       await tester.pumpAndSettle();

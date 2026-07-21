@@ -78,8 +78,7 @@ class ExampleHome extends StatelessWidget {
         BlockRow(
           blocks: [
             BlockInputField(
-              resultId: 'email',
-              blockTag: 'emailInput',
+              blockTag: 'email',
               hintText: 'Please enter your Email',
             ),
           ],
@@ -87,8 +86,7 @@ class ExampleHome extends StatelessWidget {
         BlockRow(
           blocks: [
             BlockInputField(
-              resultId: 'password',
-              blockTag: 'passwordInput',
+              blockTag: 'password',
               hintText: 'Please enter your Password',
               obscureText: true,
             ),
@@ -97,7 +95,7 @@ class ExampleHome extends StatelessWidget {
         BlockRow(
           blocks: [
             BlockRadioGroup<String>(
-              resultId: 'switch',
+              blockTag: 'switch',
               options: ['Log In', 'Sign Up'],
               initialValue: 'Log In',
               onChanged: (value, controller) {
@@ -113,28 +111,28 @@ class ExampleHome extends StatelessWidget {
               blockTag: 'button',
               isPositive: true,
               onPressedWithError: (results, dialogController) {
-                final email = results.get('email');
-                final password = results.get('password');
+                final email = results.getValue(blockTag: 'email');
+                final password = results.getValue(blockTag: 'password');
                 if (email == null || email.isEmpty) {
-                  dialogController.shakeBlock('emailInput');
+                  dialogController.shakeBlock('email');
                   dialogController.setBlockInputFieldErrorText(
-                    'emailInput',
+                    'email',
                     'Email is required',
                   );
                   return 'Email is required';
                 }
                 if (password == null || password.isEmpty) {
-                  dialogController.shakeBlock('passwordInput');
+                  dialogController.shakeBlock('password');
                   dialogController.setBlockInputFieldErrorText(
-                    'passwordInput',
+                    'password',
                     'Password is required',
                   );
                   return 'Password is required';
                 }
                 if (password.length < 6) {
-                  dialogController.shakeBlock('passwordInput');
+                  dialogController.shakeBlock('password');
                   dialogController.setBlockInputFieldErrorText(
-                    'passwordInput',
+                    'password',
                     'Password must be at least 6 characters',
                   );
                   return 'Password must be at least 6 characters';

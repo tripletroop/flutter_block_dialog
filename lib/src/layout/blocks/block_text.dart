@@ -26,18 +26,7 @@ class BlockText extends Block {
     super.minHeight,
     super.blockTag,
     this.textAlign = TextAlign.center,
-  }) : _text = ValueNotifier<String>(text);
-
-  final ValueNotifier<String> _text;
-
-  /// Current text value displayed by this block.
-  String get text => _text.value;
-
-  /// Update the displayed text and notify listeners.
-  void setText(String value) {
-    if (_text.value == value) return;
-    _text.value = value;
-  }
+  }) : _notifier = ValueNotifier(TextChangeableValues(label: text));
 
   /// Whether this text block is the dialog title, which will affect affect default styling. and min height
   final bool isDialogTitle;
@@ -86,6 +75,17 @@ class BlockText extends Block {
   /// Optional text selection color.
   final Color? selectionColor;
 
+  final ValueNotifier<TextChangeableValues> _notifier;
+
+  /// Current text value displayed by this block.
+  String get text => _notifier.value.label;
+
+  /// Update the displayed text and notify listeners.
+  void setText(String value) {
+    if (_notifier.value.label == value) return;
+    _notifier.value = _notifier.value.copyWith(label: value);
+  }
+
   @override
   Widget buildContent(
     BuildContext context,
@@ -93,10 +93,10 @@ class BlockText extends Block {
     DialogConfig configs,
   ) {
     return Center(
-      child: ValueListenableBuilder<String>(
-        valueListenable: _text,
-        builder: (context, value, _) => Text(
-          value,
+      child: ValueListenableBuilder<TextChangeableValues>(
+        valueListenable: _notifier,
+        builder: (context, changeableValues, _) => Text(
+          changeableValues.label,
           strutStyle: strutStyle,
           textAlign: textAlign,
           textDirection: textDirection,
@@ -114,6 +114,22 @@ class BlockText extends Block {
               : style),
         ),
       ),
+    );
+  }
+}
+
+class TextChangeableValues {
+  TextChangeableValues({
+    required this.label,
+  });
+
+  final String label;
+
+  TextChangeableValues copyWith({
+    String? label,
+  }) {
+    return TextChangeableValues(
+      label: label ?? this.label,
     );
   }
 }

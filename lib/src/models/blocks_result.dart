@@ -20,18 +20,18 @@ class BlocksResult<T> {
   /// Why the dialog was dismissed.
   final DismissReason dismissReason;
 
-  /// Map of block results keyed by [Block.resultId].
+  /// Map of block results keyed by [Block.blockTag].
   final Map<String, dynamic> values;
 
   /// Optional payload (commonly set by buttons).
   final T? payload;
 
-  /// Typed getter for a value stored under [resultKey].
-  V get<V>(String resultKey) {
-    final value = values[resultKey];
+  /// Typed getter for a value stored under [blockTag].
+  V getValue<V>({required String blockTag}) {
+    final value = values[blockTag];
     assert(
       value is V,
-      'BlocksResult: value for "$resultKey" is not of type $V '
+      'BlocksResult: value for "$blockTag" is not of type $V '
       '(actual: ${value.runtimeType})',
     );
     return value as V;

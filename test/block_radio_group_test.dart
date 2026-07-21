@@ -35,7 +35,7 @@ class _RadioHarnessState<T> extends State<_RadioHarness<T>>
     rows = [
       BlockRow(blocks: [
         BlockRadioGroup<T>(
-          resultId: 'choice',
+          blockTag: 'choice',
           options: widget.options,
           onChanged: (value, controller) => widget.onChanged(value),
         )
@@ -79,7 +79,32 @@ void main() {
 
     await tester.tap(find.text('B'));
     await tester.pumpAndSettle();
-
     expect(selected, 'B');
+  });
+
+  test('BlockRadioGroup selection change programmatically', () {
+    final controller = BlockDialogController();
+    final animation = AnimationController(
+      vsync: const TestVSync(),
+      duration: const Duration(milliseconds: 200),
+    );
+
+    controller.initialize(
+      animationController: animation,
+      textDirection: TextDirection.ltr,
+      rows: [
+        BlockRow(
+          blocks: [
+            BlockRadioGroup(
+              blockTag: 'radio',
+              options: ['A', 'B'],
+              initialValue: 'A',
+            ),
+          ],
+        ),
+      ],
+    );
+    final isBSelected = controller.setBlockRadioGroupValue('radio', 'B');
+    expect(isBSelected, isTrue);
   });
 }

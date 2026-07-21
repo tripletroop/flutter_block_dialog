@@ -12,8 +12,8 @@ void main() {
     expect(result.dismissedByCancel, isFalse);
     expect(result.dismissedByCode, isFalse);
 
-    expect(result.get<String>('name'), 'Ali');
-    expect(result.get<int>('age'), 30);
+    expect(result.getValue<String>(blockTag: 'name'), 'Ali');
+    expect(result.getValue<int>(blockTag: 'age'), 30);
   });
 
   test('BlocksResult throws on incorrect type', () {
@@ -23,7 +23,7 @@ void main() {
     );
 
     expect(
-      () => result.get<String>('age'),
+      () => result.getValue<String>(blockTag: 'age'),
       throwsA(isA<AssertionError>()),
     );
   });

@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _ValueBlock extends Block {
-  _ValueBlock({required super.resultId, required this.value}) : super(flex: 1);
+  _ValueBlock({required super.blockTag, required this.value}) : super(flex: 1);
 
   final Object? value;
 
@@ -41,8 +41,8 @@ void main() {
       textDirection: TextDirection.ltr,
       rows: [
         BlockRow(blocks: [
-          _ValueBlock(resultId: 'name', value: 'John'),
-          _ValueBlock(resultId: 'age', value: 21),
+          _ValueBlock(blockTag: 'name', value: 'John'),
+          _ValueBlock(blockTag: 'age', value: 21),
         ]),
       ],
     );
@@ -53,7 +53,7 @@ void main() {
     expect(result.payload, 'ok');
   });
 
-  test('BlockDialogController asserts on duplicate resultIds', () {
+  test('BlockDialogController asserts on duplicate blockTags', () {
     final controller = BlockDialogController();
     final animation = AnimationController(
       vsync: const TestVSync(),
@@ -66,8 +66,8 @@ void main() {
         textDirection: TextDirection.ltr,
         rows: [
           BlockRow(blocks: [
-            _ValueBlock(resultId: 'dup', value: 1),
-            _ValueBlock(resultId: 'dup', value: 2),
+            _ValueBlock(blockTag: 'dup', value: 1),
+            _ValueBlock(blockTag: 'dup', value: 2),
           ]),
         ],
       ),
@@ -192,9 +192,8 @@ void main() {
       rows: [
         BlockRow(blocks: [
           BlockCheckbox(
-            resultId: 'accept',
-            label: 'Accept',
             blockTag: 'accept_cb',
+            label: 'Accept',
             initialValue: false,
           ),
         ]),
@@ -221,7 +220,6 @@ void main() {
       rows: [
         BlockRow(blocks: [
           BlockCheckbox(
-            resultId: 'accept',
             label: 'Accept',
             blockTag: 'accept_cb',
             initialValue: false,
@@ -258,7 +256,6 @@ void main() {
       rows: [
         BlockRow(blocks: [
           BlockRadioGroup<String>(
-            resultId: 'choice',
             blockTag: 'choice_group',
             options: const ['A', 'B', 'C'],
             initialValue: 'A',
@@ -292,7 +289,6 @@ void main() {
       rows: [
         BlockRow(blocks: [
           BlockRadioGroup<String>(
-            resultId: 'choice',
             blockTag: 'choice_group',
             options: const ['A', 'B', 'C'],
             initialValue: 'A',
@@ -341,7 +337,6 @@ void main() {
       rows: [
         BlockRow(blocks: [
           BlockInputField(
-            resultId: 'username',
             blockTag: 'input_username',
           ),
         ]),
@@ -369,7 +364,6 @@ void main() {
       rows: [
         BlockRow(blocks: [
           BlockInputField(
-            resultId: 'password',
             blockTag: 'input_password',
           ),
         ]),
@@ -406,7 +400,6 @@ void main() {
       rows: [
         BlockRow(blocks: [
           BlockInputField(
-            resultId: 'email',
             blockTag: 'input_email',
           ),
         ]),
@@ -442,7 +435,6 @@ void main() {
       rows: [
         BlockRow(blocks: [
           BlockInputField(
-            resultId: 'search',
             blockTag: 'input_search',
             initialText: 'initial value',
           ),
@@ -476,7 +468,6 @@ void main() {
       rows: [
         BlockRow(blocks: [
           BlockInputField(
-            resultId: 'test',
             blockTag: 'input_test',
           ),
         ]),

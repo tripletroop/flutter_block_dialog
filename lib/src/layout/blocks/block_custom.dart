@@ -44,13 +44,9 @@ class BlockCustom extends Block {
     super.flex = 1,
     super.override,
     super.minHeight,
-    super.resultId,
     super.blockTag,
     this.matchDialogTheme = true,
-  }) : assert(
-          resultId == null || resultId.isEmpty || resultId.isNotEmpty,
-          'resultId must not be empty if provided.',
-        );
+  });
 
   /// The custom controller instance for this block.
   /// Must extend [BlockCustomController] and implement [buildResult].
@@ -66,9 +62,6 @@ class BlockCustom extends Block {
   /// Returns the result value by calling the blockController's buildResult method.
   @override
   dynamic readValue() {
-    if (resultId == null || resultId!.isEmpty) {
-      return null;
-    }
     return blockController?.buildResult();
   }
 

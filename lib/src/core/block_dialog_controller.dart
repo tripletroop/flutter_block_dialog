@@ -57,34 +57,18 @@ class BlockDialogController {
     }
     _blocks.addAll(rows.expand((row) => row.blocks));
     assert(
-      _validateUniqueResultIds(_blocks),
-      'Duplicate Block IDs detected. '
-      'Each result-producing block must have a unique id.',
-    );
-    assert(
       _validateUniqueBlockTags(_blocks),
       'Duplicate Block tags detected. '
       'Each block must have a unique tag.',
     );
   }
 
-  bool _validateUniqueResultIds(List<Block> blocks) {
+  bool _validateUniqueBlockTags(List<Block> blocks) {
     final ids = <String>{};
 
     for (final block in blocks) {
-      if (block.resultId == null) continue;
-      if (!ids.add(block.resultId!)) return false;
-    }
-
-    return true;
-  }
-
-  bool _validateUniqueBlockTags(List<Block> blocks) {
-    final tags = <String>{};
-
-    for (final block in blocks) {
       if (block.blockTag == null) continue;
-      if (!tags.add(block.blockTag!)) return false;
+      if (!ids.add(block.blockTag!)) return false;
     }
 
     return true;
@@ -93,8 +77,8 @@ class BlockDialogController {
   BlocksResult collectResults({Object? payload}) {
     final values = <String, dynamic>{};
     for (final block in _blocks) {
-      final id = block.resultId;
-      if (id == null) continue;
+      final id = block.blockTag;
+      if (id == null || id.isEmpty) continue;
 
       final blockValue = block.readValue();
       if (blockValue == null) continue;
@@ -215,7 +199,7 @@ class BlockDialogController {
   }
 
   /// Enable or disable a tagged [BlockInputField]. Returns true on success.
-  bool setBlockInputFieldEnabled(String blockTag, bool? enabled) {
+  bool setBlockInputFieldEnabled(String blockTag, bool enabled) {
     final block = getBlockByTagAs<BlockInputField>(blockTag);
     if (block == null) return false;
     block.setEnabled(enabled);

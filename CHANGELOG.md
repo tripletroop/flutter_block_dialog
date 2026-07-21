@@ -1,3 +1,8 @@
+## [2.0.1] - 2026-07-21
+
+- `BlockButton` can now accept loadingWidget in case the user want to provide his own loading widget
+- Merged `Block`'s attributes `resultID` and `blockTag` into single value which is `blockTag`
+
 ## [2.0.0] - 2026-07-19
 
 ### ⚠️ Breaking Changes

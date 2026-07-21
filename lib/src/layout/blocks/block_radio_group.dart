@@ -6,19 +6,11 @@ import 'package:flutter/material.dart';
 /// Radio group block that stores a single selected value of type [T].
 class BlockRadioGroup<T> extends Block {
   BlockRadioGroup({
-    required String resultId,
-
     /// Options to present in the group.
     required List<T> options,
     T? initialValue,
-
-    /// Called when the selected value changes.
     this.onChanged,
-
-    /// Custom row builder without the built-in radio widget.
     this.itemBuilder,
-
-    /// Provides a label string when not using a custom builder.
     this.labelBuilder,
     this.mouseCursor,
     this.activeColor,
@@ -45,18 +37,16 @@ class BlockRadioGroup<T> extends Block {
     super.blockTag,
     super.override,
     super.minHeight,
-  })  : _options = options,
-        _notifier = ValueNotifier<T?>(initialValue),
-        _disabledOptions = ValueNotifier<Set<T>>(<T>{}),
-        assert(options.contains(initialValue) || initialValue == null,
+  })  : assert(options.contains(initialValue) || initialValue == null,
             'initialValue must be one of the options or null'),
-        assert(resultId.isNotEmpty, 'resultId must not be empty'),
         assert(options.length > 1, 'options must contain at least 2 items'),
-        super(resultId: resultId);
+        _options = options,
+        _notifier = ValueNotifier(RadioGroupChangeableValues<T>(
+          value: initialValue,
+        ));
 
   final List<T> _options;
-  final ValueNotifier<T?> _notifier;
-  final ValueNotifier<Set<T>> _disabledOptions;
+
   final void Function(T? value, BlockDialogController controller)? onChanged;
   final Widget Function(T option, bool selected, DialogConfig configs)?
       itemBuilder;
@@ -122,39 +112,43 @@ class BlockRadioGroup<T> extends Block {
   final TextStyle? textStyle;
   final TextStyle? selectedStyle;
 
+  final ValueNotifier<RadioGroupChangeableValues<T>> _notifier;
+
   /// Current selected value.
-  T? get selectedValue => _notifier.value;
+  T? get selectedValue => _notifier.value.value;
 
   /// Update selected value at runtime.
   bool setSelectedValue(T? value) {
     if (value != null && !_options.contains(value)) return false;
-    if (value != null && _disabledOptions.value.contains(value)) return false;
-    if (_notifier.value == value) return true;
-    _notifier.value = value;
+    if (value != null && _notifier.value.disabledOptions.contains(value)) {
+      return false;
+    }
+    if (_notifier.value.value == value) return true;
+    _notifier.value = _notifier.value.copyWith(value: value);
     return true;
   }
 
   /// Enable or disable a specific option at runtime.
   bool setOptionEnabled(T option, bool enabled) {
     if (!_options.contains(option)) return false;
-    final next = Set<T>.from(_disabledOptions.value);
+    final next = Set<T>.from(_notifier.value.disabledOptions);
     if (enabled) {
       next.remove(option);
     } else {
       next.add(option);
     }
-    if (next.length == _disabledOptions.value.length &&
-        next.containsAll(_disabledOptions.value)) {
+    if (next.length == _notifier.value.disabledOptions.length &&
+        next.containsAll(_notifier.value.disabledOptions)) {
       return true;
     }
-    _disabledOptions.value = next;
+    _notifier.value = _notifier.value.copyWith(disabledOptions: next);
     return true;
   }
 
   /// Whether a specific option is currently enabled.
   bool isOptionEnabled(T option) {
     if (!_options.contains(option)) return false;
-    return !_disabledOptions.value.contains(option);
+    return !_notifier.value.disabledOptions.contains(option);
   }
 
   /// Returns the currently selected value.
@@ -167,66 +161,86 @@ class BlockRadioGroup<T> extends Block {
     BlockDialogController controller,
     DialogConfig configs,
   ) {
-    return ValueListenableBuilder<T?>(
+    return ValueListenableBuilder<RadioGroupChangeableValues>(
       valueListenable: _notifier,
-      builder: (context, value, _) => ValueListenableBuilder<Set<T>>(
-        valueListenable: _disabledOptions,
-        builder: (context, disabledOptions, __) {
-          return RadioGroup<T>(
-            groupValue: value,
-            onChanged: (v) {
-              if (v != null && disabledOptions.contains(v)) return;
-              _notifier.value = v;
-              onChanged?.call(v, controller);
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: _options.map((option) {
-                final selected = option == value;
-                final optionEnabled = !disabledOptions.contains(option);
-                final label = labelBuilder?.call(option) ?? option.toString();
-                return Material(
-                  color: Colors.transparent,
-                  child: RadioListTile<T>(
-                    value: option,
-                    enabled: optionEnabled,
-                    mouseCursor: mouseCursor,
-                    activeColor: activeColor,
-                    fillColor: fillColor,
-                    hoverColor: hoverColor,
-                    overlayColor: overlayColor,
-                    splashRadius: splashRadius,
-                    materialTapTargetSize: materialTapTargetSize,
-                    visualDensity: visualDensity,
-                    focusNode: focusNode,
-                    autofocus: autofocus,
-                    tileColor: tileColor,
-                    selectedTileColor: selectedTileColor,
-                    enableFeedback: enableFeedback,
-                    isThreeLine: isThreeLine,
-                    dense: dense,
-                    contentPadding: contentPadding,
-                    shape: shape,
-                    controlAffinity: controlAffinity,
-                    titleAlignment: titleAlignment,
-                    title: itemBuilder != null
-                        ? itemBuilder!(option, selected, configs)
-                        : Text(label,
-                            style: (configs.textStyle ?? TextStyle()).merge(
-                                TextStyle(
-                                        fontWeight:
-                                            selected ? FontWeight.bold : null,
-                                        color: optionEnabled == false
-                                            ? Colors.grey
-                                            : null)
-                                    .merge(selectedStyle))),
-                  ),
-                );
-              }).toList(),
-            ),
-          );
-        },
-      ),
+      builder: (context, changeableValues, _) {
+        return RadioGroup<T>(
+          groupValue: changeableValues.value,
+          onChanged: (v) {
+            if (v != null && changeableValues.disabledOptions.contains(v)) {
+              return;
+            }
+            setSelectedValue(v);
+            onChanged?.call(v, controller);
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: _options.map((option) {
+              final selected = option == changeableValues.value;
+              final optionEnabled =
+                  !changeableValues.disabledOptions.contains(option);
+              final label = labelBuilder?.call(option) ?? option.toString();
+              return Material(
+                color: Colors.transparent,
+                child: RadioListTile<T>(
+                  value: option,
+                  enabled: optionEnabled,
+                  mouseCursor: mouseCursor,
+                  activeColor: activeColor,
+                  fillColor: fillColor,
+                  hoverColor: hoverColor,
+                  overlayColor: overlayColor,
+                  splashRadius: splashRadius,
+                  materialTapTargetSize: materialTapTargetSize,
+                  visualDensity: visualDensity,
+                  focusNode: focusNode,
+                  autofocus: autofocus,
+                  tileColor: tileColor,
+                  selectedTileColor: selectedTileColor,
+                  enableFeedback: enableFeedback,
+                  isThreeLine: isThreeLine,
+                  dense: dense,
+                  contentPadding: contentPadding,
+                  shape: shape,
+                  controlAffinity: controlAffinity,
+                  titleAlignment: titleAlignment,
+                  title: itemBuilder != null
+                      ? itemBuilder!(option, selected, configs)
+                      : Text(label,
+                          style: (configs.textStyle ?? TextStyle()).merge(
+                              TextStyle(
+                                      fontWeight:
+                                          selected ? FontWeight.bold : null,
+                                      color: optionEnabled == false
+                                          ? Colors.grey
+                                          : null)
+                                  .merge(selectedStyle))),
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class RadioGroupChangeableValues<T> {
+  RadioGroupChangeableValues({
+    this.value,
+    this.disabledOptions = const {},
+  });
+
+  final T? value;
+  final Set<T> disabledOptions;
+
+  RadioGroupChangeableValues<T> copyWith({
+    T? value,
+    Set<T>? disabledOptions,
+  }) {
+    return RadioGroupChangeableValues(
+      value: value ?? this.value,
+      disabledOptions: disabledOptions ?? this.disabledOptions,
     );
   }
 }

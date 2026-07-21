@@ -1,11 +1,11 @@
 # block_dialog
 
-Block-based, animated dialogs for Flutter with composable layout, typed results, and fine-grained dismissal control.
+Block-based, animated dialogs for Flutter with composable layout, typed results, full interaction among blocks, and fine-grained dismissal control.
 
 ## Features
 
 - Compose dialogs from rows of blocks (text, buttons, inputs, radio group, checkbox, spacer, custom).
-- Typed results with `BlocksResult<T>` and per-block `resultId` keys.
+- Typed results with `BlocksResult<T>` and per-block `blockTag` keys.
 - Multiple built-in block animations with easy customization.
 - Animated dimmed background synchronized with dialog animation.
 - Per-block overrides for position and animation.
@@ -16,7 +16,7 @@ Add to `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  block_dialog: ^1.0.1
+  block_dialog: ^2.0.1
 ```
 
 ## Preview
@@ -37,10 +37,10 @@ BlockDialog.show(
       BlockText(text: 'Create account?', isDialogTitle: true),
     ]),
     BlockRow(blocks: [
-      BlockInputField(resultId: 'email', hintText: 'Email'),
+      BlockInputField(blockTag: 'email', hintText: 'Email'),
     ]),
     BlockRow(blocks: [
-      BlockInputField(resultId: 'password', hintText: 'Password'),
+      BlockInputField(blockTag: 'password', hintText: 'Password'),
     ]),
     BlockRow(blocks: [
       BlockButton(
@@ -61,9 +61,9 @@ BlockDialog.show(
 ## Blocks
 
 - `BlockText` — simple text/title block.
-- `BlockInputField` — text input (use `resultId`).
-- `BlockCheckbox` — boolean input (use `resultId`).
-- `BlockRadioGroup<T>` — single-choice selection (use `resultId`).
+- `BlockInputField` — text input.
+- `BlockCheckbox` — boolean input.
+- `BlockRadioGroup<T>` — single-choice selection.
 - `BlockButton` — action button (optionally closes the dialog).
 - `BlockSpacer` — vertical gap.
 - `BlockCustom` — any widget, optionally with its own `BlockCustomController`.
@@ -124,7 +124,7 @@ const DialogConfig(
 
 ## Results & Dismissal
 
-- Each block that produces a value must provide a unique `resultId`.
+- Each block that produces a value must provide a unique `blockTag`.
 - `BlocksResult.dismissReason` indicates how the dialog closed.
 - Tapping outside can be enabled/disabled with `barrierDismissible`.
 
@@ -132,7 +132,7 @@ const DialogConfig(
 
 ```dart
 BlockCustom(
-  resultId: 'rating',
+  blockTag: 'rating',
   blockController: BlockCustomController(),
   builder: (context, dialogController, controller, configs) {
     return const Center(child: Text('Custom'));

@@ -36,10 +36,8 @@ abstract class Block {
   /// Minimum height for this block.
   final double? minHeight;
 
-  /// Optional key used to store this block's value in [BlocksResult.values].
-  final String? resultId;
-
-  /// Optional tag can be used to shake this block
+  /// unique tag for each block that can be used to interact with this block from the [BlockDialogController]
+  /// and will be used to get results of this block
   final String? blockTag;
 
   /// Increments to replay a one-shot shake animation on demand.
@@ -47,7 +45,6 @@ abstract class Block {
 
   Block({
     required this.flex,
-    this.resultId,
     this.override,
     this.blockTag,
     this.minHeight,

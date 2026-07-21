@@ -24,7 +24,7 @@ class _ButtonUpdateHarnessState extends State<_ButtonUpdateHarness>
         blocks: [
           BlockButton(
             label: 'Save',
-            blockTag: 'action_btn',
+            blockTag: 'save_btn',
             closeOnPress: false,
             onPressed: (_, __) {
               taps += 1;
@@ -73,7 +73,7 @@ void main() {
       find.byType(_ButtonUpdateHarness),
     );
 
-    final updated = state.controller.setBlockButtonLabel('action_btn', 'Send');
+    final updated = state.controller.setBlockButtonLabel('save_btn', 'Send');
     expect(updated, isTrue);
 
     await tester.pump();
@@ -93,16 +93,15 @@ void main() {
     await tester.pump();
     expect(state.taps, 1);
 
-    final disabled =
-        state.controller.setBlockButtonEnabled('action_btn', false);
+    final disabled = state.controller.setBlockButtonEnabled('save_btn', false);
     expect(disabled, isTrue);
     await tester.pump();
-
+    // taps shouldn't increase since the button is disabled
     await tester.tap(find.text('Save'));
     await tester.pump();
     expect(state.taps, 1);
 
-    final enabled = state.controller.setBlockButtonEnabled('action_btn', true);
+    final enabled = state.controller.setBlockButtonEnabled('save_btn', true);
     expect(enabled, isTrue);
     await tester.pump();
 
