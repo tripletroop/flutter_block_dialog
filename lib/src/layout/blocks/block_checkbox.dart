@@ -129,7 +129,7 @@ class BlockCheckbox extends Block {
 
   /// Returns the current checked state.
   @override
-  dynamic readValue() => _notifier.value;
+  dynamic readValue() => _notifier.value.value;
 
   @override
   Widget buildContent(

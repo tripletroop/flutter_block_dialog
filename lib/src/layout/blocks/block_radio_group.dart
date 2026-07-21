@@ -153,7 +153,7 @@ class BlockRadioGroup<T> extends Block {
 
   /// Returns the currently selected value.
   @override
-  dynamic readValue() => _notifier.value;
+  dynamic readValue() => _notifier.value.value;
 
   @override
   Widget buildContent(

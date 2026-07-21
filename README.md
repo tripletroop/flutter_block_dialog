@@ -16,7 +16,7 @@ Add to `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  block_dialog: ^2.0.1
+  block_dialog: ^2.0.2
 ```
 
 ## Preview
