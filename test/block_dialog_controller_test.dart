@@ -3,7 +3,7 @@ import 'package:block_dialog/src/layout/block_row.dart';
 import 'package:block_dialog/src/layout/blocks/block.dart';
 import 'package:block_dialog/src/layout/blocks/block_button.dart';
 import 'package:block_dialog/src/layout/blocks/block_checkbox.dart';
-import 'package:block_dialog/src/layout/blocks/block_input_field.dart';
+import 'package:block_dialog/src/layout/blocks/block_text_field.dart';
 import 'package:block_dialog/src/layout/blocks/block_radio_group.dart';
 import 'package:block_dialog/src/layout/blocks/block_text.dart';
 import 'package:block_dialog/src/theme/dialog_config.dart';
@@ -324,7 +324,7 @@ void main() {
     );
   });
 
-  test('BlockDialogController sets input field text by tag', () {
+  test('BlockDialogController sets text field text by tag', () {
     final controller = BlockDialogController();
     final animation = AnimationController(
       vsync: const TestVSync(),
@@ -336,22 +336,22 @@ void main() {
       textDirection: TextDirection.ltr,
       rows: [
         BlockRow(blocks: [
-          BlockInputField(
+          BlockTextField(
             blockTag: 'input_username',
           ),
         ]),
       ],
     );
 
-    final result = controller.setBlockInputFieldText('input_username', 'Alice');
+    final result = controller.setBlockTextFieldText('input_username', 'Alice');
     expect(result, isTrue);
     expect(
-      controller.getBlockByTagAs<BlockInputField>('input_username')!.text,
+      controller.getBlockByTagAs<BlockTextField>('input_username')!.text,
       'Alice',
     );
   });
 
-  test('BlockDialogController sets input field enabled by tag', () {
+  test('BlockDialogController sets text field enabled by tag', () {
     final controller = BlockDialogController();
     final animation = AnimationController(
       vsync: const TestVSync(),
@@ -363,7 +363,7 @@ void main() {
       textDirection: TextDirection.ltr,
       rows: [
         BlockRow(blocks: [
-          BlockInputField(
+          BlockTextField(
             blockTag: 'input_password',
           ),
         ]),
@@ -371,23 +371,22 @@ void main() {
     );
 
     final disabled =
-        controller.setBlockInputFieldEnabled('input_password', false);
+        controller.setBlockTextFieldEnabled('input_password', false);
     expect(disabled, isTrue);
     expect(
-      controller.getBlockByTagAs<BlockInputField>('input_password')!.enabled,
+      controller.getBlockByTagAs<BlockTextField>('input_password')!.enabled,
       isFalse,
     );
 
-    final enabled =
-        controller.setBlockInputFieldEnabled('input_password', true);
+    final enabled = controller.setBlockTextFieldEnabled('input_password', true);
     expect(enabled, isTrue);
     expect(
-      controller.getBlockByTagAs<BlockInputField>('input_password')!.enabled,
+      controller.getBlockByTagAs<BlockTextField>('input_password')!.enabled,
       isTrue,
     );
   });
 
-  test('BlockDialogController sets input field read-only by tag', () {
+  test('BlockDialogController sets text field read-only by tag', () {
     final controller = BlockDialogController();
     final animation = AnimationController(
       vsync: const TestVSync(),
@@ -399,30 +398,29 @@ void main() {
       textDirection: TextDirection.ltr,
       rows: [
         BlockRow(blocks: [
-          BlockInputField(
+          BlockTextField(
             blockTag: 'input_email',
           ),
         ]),
       ],
     );
 
-    final readOnly = controller.setBlockInputFieldReadOnly('input_email', true);
+    final readOnly = controller.setBlockTextFieldReadOnly('input_email', true);
     expect(readOnly, isTrue);
     expect(
-      controller.getBlockByTagAs<BlockInputField>('input_email')!.readOnly,
+      controller.getBlockByTagAs<BlockTextField>('input_email')!.readOnly,
       isTrue,
     );
 
-    final editable =
-        controller.setBlockInputFieldReadOnly('input_email', false);
+    final editable = controller.setBlockTextFieldReadOnly('input_email', false);
     expect(editable, isTrue);
     expect(
-      controller.getBlockByTagAs<BlockInputField>('input_email')!.readOnly,
+      controller.getBlockByTagAs<BlockTextField>('input_email')!.readOnly,
       isFalse,
     );
   });
 
-  test('BlockDialogController clears input field by tag', () {
+  test('BlockDialogController clears text field by tag', () {
     final controller = BlockDialogController();
     final animation = AnimationController(
       vsync: const TestVSync(),
@@ -434,7 +432,7 @@ void main() {
       textDirection: TextDirection.ltr,
       rows: [
         BlockRow(blocks: [
-          BlockInputField(
+          BlockTextField(
             blockTag: 'input_search',
             initialText: 'initial value',
           ),
@@ -443,19 +441,19 @@ void main() {
     );
 
     expect(
-      controller.getBlockByTagAs<BlockInputField>('input_search')!.text,
+      controller.getBlockByTagAs<BlockTextField>('input_search')!.text,
       'initial value',
     );
 
-    final cleared = controller.clearBlockInputField('input_search');
+    final cleared = controller.clearBlockTextField('input_search');
     expect(cleared, isTrue);
     expect(
-      controller.getBlockByTagAs<BlockInputField>('input_search')!.text,
+      controller.getBlockByTagAs<BlockTextField>('input_search')!.text,
       isEmpty,
     );
   });
 
-  test('BlockDialogController returns false for non-existent input field', () {
+  test('BlockDialogController returns false for non-existent text field', () {
     final controller = BlockDialogController();
     final animation = AnimationController(
       vsync: const TestVSync(),
@@ -467,18 +465,18 @@ void main() {
       textDirection: TextDirection.ltr,
       rows: [
         BlockRow(blocks: [
-          BlockInputField(
+          BlockTextField(
             blockTag: 'input_test',
           ),
         ]),
       ],
     );
 
-    expect(controller.setBlockInputFieldText('nonexistent', 'text'), isFalse);
-    expect(controller.setBlockInputFieldEnabled('nonexistent', false), isFalse);
-    expect(controller.setBlockInputFieldReadOnly('nonexistent', true), isFalse);
-    expect(controller.clearBlockInputField('nonexistent'), isFalse);
-    expect(controller.focusBlockInputField('nonexistent'), isFalse);
-    expect(controller.unfocusBlockInputField('nonexistent'), isFalse);
+    expect(controller.setBlockTextFieldText('nonexistent', 'text'), isFalse);
+    expect(controller.setBlockTextFieldEnabled('nonexistent', false), isFalse);
+    expect(controller.setBlockTextFieldReadOnly('nonexistent', true), isFalse);
+    expect(controller.clearBlockTextField('nonexistent'), isFalse);
+    expect(controller.focusBlockTextField('nonexistent'), isFalse);
+    expect(controller.unfocusBlockTextField('nonexistent'), isFalse);
   });
 }

@@ -7,9 +7,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class BlockInputField extends Block {
+class BlockTextField extends Block {
   /// Text input block that stores the current text value.
-  BlockInputField({
+  BlockTextField({
     super.flex = 1,
     super.override,
     super.minHeight,
@@ -79,7 +79,7 @@ class BlockInputField extends Block {
     this.spellCheckConfiguration,
     this.magnifierConfiguration,
   })  : editingController = TextEditingController(text: initialText),
-        _notifier = ValueNotifier(InputFieldChangeableValues(
+        _notifier = ValueNotifier(TextFieldChangeableValues(
           readOnly: readOnly,
           enabled: enabled,
         ));
@@ -161,7 +161,7 @@ class BlockInputField extends Block {
   final SpellCheckConfiguration? spellCheckConfiguration;
   final TextMagnifierConfiguration? magnifierConfiguration;
 
-  final ValueNotifier<InputFieldChangeableValues> _notifier;
+  final ValueNotifier<TextFieldChangeableValues> _notifier;
 
   /// Current text value.
   String get text => editingController.text;
@@ -227,7 +227,7 @@ class BlockInputField extends Block {
     BlockDialogController controller,
     DialogConfig configs,
   ) {
-    return ValueListenableBuilder<InputFieldChangeableValues>(
+    return ValueListenableBuilder<TextFieldChangeableValues>(
       valueListenable: _notifier,
       builder: (context, changeableValues, _) {
         return TextField(
@@ -312,8 +312,8 @@ class BlockInputField extends Block {
   }
 }
 
-class InputFieldChangeableValues {
-  InputFieldChangeableValues({
+class TextFieldChangeableValues {
+  TextFieldChangeableValues({
     required this.readOnly,
     required this.enabled,
     this.errorText,
@@ -323,12 +323,12 @@ class InputFieldChangeableValues {
   final bool enabled;
   final String? errorText;
 
-  InputFieldChangeableValues copyWith({
+  TextFieldChangeableValues copyWith({
     bool? readOnly,
     bool? enabled,
     String? errorText,
   }) {
-    return InputFieldChangeableValues(
+    return TextFieldChangeableValues(
       readOnly: readOnly ?? this.readOnly,
       enabled: enabled ?? this.enabled,
       errorText: errorText ?? this.errorText,

@@ -37,10 +37,10 @@ BlockDialog.show(
       BlockText(text: 'Create account?', isDialogTitle: true),
     ]),
     BlockRow(blocks: [
-      BlockInputField(blockTag: 'email', hintText: 'Email'),
+      BlockTextField(blockTag: 'email', hintText: 'Email'),
     ]),
     BlockRow(blocks: [
-      BlockInputField(blockTag: 'password', hintText: 'Password'),
+      BlockTextField(blockTag: 'password', hintText: 'Password'),
     ]),
     BlockRow(blocks: [
       BlockButton(
@@ -61,7 +61,7 @@ BlockDialog.show(
 ## Blocks
 
 - `BlockText` — simple text/title block.
-- `BlockInputField` — text input.
+- `BlockTextField` — text input.
 - `BlockCheckbox` — boolean input.
 - `BlockRadioGroup<T>` — single-choice selection.
 - `BlockButton` — action button (optionally closes the dialog).
@@ -77,6 +77,7 @@ BlockDialog.show(
 - `BlockButton`
   - setBlockButtonLabel
   - setBlockButtonEnabled
+  - performButtonTap
 - `BlockCheckbox`
   - setBlockCheckboxValue
   - toggleBlockCheckboxValue
@@ -84,15 +85,15 @@ BlockDialog.show(
 - `BlockRadioGroup<T>`
   - setBlockRadioGroupValue
   - setBlockRadioGroupOptionEnabled
-- `BlockInputField`
-  - setBlockInputFieldText
-  - appendBlockInputFieldText
-  - setBlockInputFieldErrorText
-  - setBlockInputFieldEnabled
-  - setBlockInputFieldReadOnly
-  - clearBlockInputField
-  - focusBlockInputField
-  - unfocusBlockInputField
+- `BlockTextField`
+  - setBlockTextFieldText
+  - appendBlockTextFieldText
+  - setBlockTextFieldErrorText
+  - setBlockTextFieldEnabled
+  - setBlockTextFieldReadOnly
+  - clearBlockTextField
+  - focusBlockTextField
+  - unfocusBlockTextField
 - `BlockCustom`
   - getBlockCustomController
 

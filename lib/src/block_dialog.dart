@@ -13,11 +13,14 @@ class BlockDialog {
   /// - [rows] define the layout (each row contains blocks).
   /// - [barrierDismissible] controls tap-outside dismissal.
   /// - [configs] customize styling, spacing, and animations.
+  /// - [errorBuilder] allows custom error UI when a block reports validation errors. You can use the hideError callback to clear the error message.
   static Future<BlocksResult<T>?> show<T>(
     BuildContext context, {
     required List<BlockRow> rows,
     bool barrierDismissible = true,
     DialogConfig configs = const DialogConfig(),
+    Widget Function(String errorMessage, VoidCallback hideError, double? width)?
+        errorBuilder,
   }) {
     return showDialog<BlocksResult<T>>(
       context: context,
@@ -28,6 +31,7 @@ class BlockDialog {
         rows: rows,
         configs: configs,
         barrierDismissible: barrierDismissible,
+        errorBuilder: errorBuilder,
       ),
     );
   }
@@ -40,7 +44,6 @@ class BlockDialog {
     required List<BlockRow> rows,
     required BlockDialogController controller,
     DialogConfig configs = const DialogConfig(),
-    EdgeInsetsGeometry? childsPadding,
   }) {
     return BlockDialogContent(
       key: key,

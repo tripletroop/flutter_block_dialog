@@ -77,7 +77,10 @@ class ExampleHome extends StatelessWidget {
         BlockRow(blocks: [BlockText('User Form', isDialogTitle: true)]),
         BlockRow(
           blocks: [
-            BlockInputField(
+            BlockTextField(
+              override: BlockOverride(
+                animationPosition: BlockPosition.middleLeft,
+              ),
               blockTag: 'email',
               hintText: 'Please enter your Email',
             ),
@@ -85,7 +88,10 @@ class ExampleHome extends StatelessWidget {
         ),
         BlockRow(
           blocks: [
-            BlockInputField(
+            BlockTextField(
+              override: BlockOverride(
+                animationPosition: BlockPosition.middleRight,
+              ),
               blockTag: 'password',
               hintText: 'Please enter your Password',
               obscureText: true,
@@ -95,12 +101,22 @@ class ExampleHome extends StatelessWidget {
         BlockRow(
           blocks: [
             BlockRadioGroup<String>(
+              override: BlockOverride(animationPosition: BlockPosition.bottom),
               blockTag: 'switch',
               options: ['Log In', 'Sign Up'],
               initialValue: 'Log In',
               onChanged: (value, controller) {
                 controller.setBlockButtonLabel('button', value);
               },
+            ),
+          ],
+        ),
+        BlockRow(
+          blocks: [
+            BlockCheckbox(
+              blockTag: 'remember',
+              label: 'Remember me',
+              initialValue: false,
             ),
           ],
         ),
@@ -115,7 +131,7 @@ class ExampleHome extends StatelessWidget {
                 final password = results.getValue(blockTag: 'password');
                 if (email == null || email.isEmpty) {
                   dialogController.shakeBlock('email');
-                  dialogController.setBlockInputFieldErrorText(
+                  dialogController.setBlockTextFieldErrorText(
                     'email',
                     'Email is required',
                   );
@@ -123,7 +139,7 @@ class ExampleHome extends StatelessWidget {
                 }
                 if (password == null || password.isEmpty) {
                   dialogController.shakeBlock('password');
-                  dialogController.setBlockInputFieldErrorText(
+                  dialogController.setBlockTextFieldErrorText(
                     'password',
                     'Password is required',
                   );
@@ -131,13 +147,16 @@ class ExampleHome extends StatelessWidget {
                 }
                 if (password.length < 6) {
                   dialogController.shakeBlock('password');
-                  dialogController.setBlockInputFieldErrorText(
+                  dialogController.setBlockTextFieldErrorText(
                     'password',
                     'Password must be at least 6 characters',
                   );
                   return 'Password must be at least 6 characters';
                 }
-                showResult(context, 'Email: $email\nPassword: $password');
+                showResult(
+                  context,
+                  'Email: $email\nPassword: $password, Remember me is set to ${results.getValue(blockTag: 'remember')}, Action: ${results.getValue(blockTag: 'switch')}',
+                );
                 return null;
               },
             ),

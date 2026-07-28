@@ -140,57 +140,60 @@ class BlockCheckbox extends Block {
     return ValueListenableBuilder<CheckBoxChangeableValues>(
       valueListenable: _notifier,
       builder: (context, changeableValues, _) {
-        return CheckboxListTile(
-          value: changeableValues.value,
-          onChanged: (v) {
-            setValue(v);
-            onChanged?.call(v, controller);
-          },
-          mouseCursor: mouseCursor,
-          activeColor: activeColor,
-          fillColor: fillColor,
-          checkColor: checkColor,
-          hoverColor: hoverColor,
-          overlayColor: overlayColor,
-          splashRadius: splashRadius,
-          materialTapTargetSize: materialTapTargetSize,
-          visualDensity: visualDensity,
-          focusNode: focusNode,
-          autofocus: autofocus,
-          shape: shape,
-          side: side,
-          isError: isError,
-          enabled: changeableValues.enabled,
-          tileColor: tileColor,
-          title: title ??
-              Text(
-                label!,
-                style: (configs.textStyle ?? TextStyle()).merge(TextStyle(
-                        color: changeableValues.enabled == false
-                            ? Colors.grey
-                            : null)
-                    .merge(textStyle)),
-              ),
-          subtitle: subtitle,
-          isThreeLine: isThreeLine,
-          dense: dense,
-          secondary: secondary,
-          selected: selected,
-          controlAffinity: controlAffinity,
-          contentPadding: contentPadding,
-          tristate: tristate,
-          checkboxShape: checkboxShape,
-          selectedTileColor: selectedTileColor,
-          onFocusChange: onFocusChange,
-          enableFeedback: enableFeedback,
-          horizontalTitleGap: horizontalTitleGap,
-          minVerticalPadding: minVerticalPadding,
-          minLeadingWidth: minLeadingWidth,
-          minTileHeight: minTileHeight,
-          checkboxSemanticLabel: checkboxSemanticLabel,
-          checkboxScaleFactor: checkboxScaleFactor,
-          titleAlignment: titleAlignment,
-          internalAddSemanticForOnTap: internalAddSemanticForOnTap,
+        return Material(
+          color: Colors.transparent,
+          child: CheckboxListTile(
+            value: changeableValues.value,
+            onChanged: (v) {
+              setValue(v);
+              onChanged?.call(v, controller);
+            },
+            mouseCursor: mouseCursor,
+            activeColor: activeColor,
+            fillColor: fillColor,
+            checkColor: checkColor,
+            hoverColor: hoverColor,
+            overlayColor: overlayColor,
+            splashRadius: splashRadius,
+            materialTapTargetSize: materialTapTargetSize,
+            visualDensity: visualDensity,
+            focusNode: focusNode,
+            autofocus: autofocus,
+            shape: shape,
+            side: side,
+            isError: isError,
+            enabled: changeableValues.enabled,
+            tileColor: tileColor,
+            title: title ??
+                Text(
+                  label!,
+                  style: (configs.textStyle ?? TextStyle()).merge(TextStyle(
+                          color: changeableValues.enabled == false
+                              ? Colors.grey
+                              : null)
+                      .merge(textStyle)),
+                ),
+            subtitle: subtitle,
+            isThreeLine: isThreeLine,
+            dense: dense,
+            secondary: secondary,
+            selected: selected,
+            controlAffinity: controlAffinity,
+            contentPadding: contentPadding,
+            tristate: tristate,
+            checkboxShape: checkboxShape,
+            selectedTileColor: selectedTileColor,
+            onFocusChange: onFocusChange,
+            enableFeedback: enableFeedback,
+            horizontalTitleGap: horizontalTitleGap,
+            minVerticalPadding: minVerticalPadding,
+            minLeadingWidth: minLeadingWidth,
+            minTileHeight: minTileHeight,
+            checkboxSemanticLabel: checkboxSemanticLabel,
+            checkboxScaleFactor: checkboxScaleFactor,
+            titleAlignment: titleAlignment,
+            internalAddSemanticForOnTap: internalAddSemanticForOnTap,
+          ),
         );
       },
     );

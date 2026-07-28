@@ -114,7 +114,7 @@ class BlockButton extends Block {
           onTapCancel: () => _setPressed(false),
           onTapUp: (_) => _setPressed(false),
           onTap:
-              changeableValues.isDisabled ? null : () => _handleTap(controller),
+              changeableValues.isDisabled ? null : () => handleTap(controller),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 120),
             curve: Curves.easeOut,
@@ -159,7 +159,7 @@ class BlockButton extends Block {
     return configs.backgroundColor;
   }
 
-  Future<void> _handleTap(BlockDialogController controller) async {
+  Future<void> handleTap(BlockDialogController controller) async {
     _setLoading(true);
     final result = controller.collectResults(payload: payload);
     String? error;

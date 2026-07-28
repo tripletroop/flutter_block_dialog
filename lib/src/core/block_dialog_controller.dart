@@ -2,7 +2,7 @@ import 'package:block_dialog/src/layout/blocks/block.dart';
 import 'package:block_dialog/src/layout/blocks/block_button.dart';
 import 'package:block_dialog/src/layout/blocks/block_checkbox.dart';
 import 'package:block_dialog/src/layout/blocks/block_custom.dart';
-import 'package:block_dialog/src/layout/blocks/block_input_field.dart';
+import 'package:block_dialog/src/layout/blocks/block_text_field.dart';
 import 'package:block_dialog/src/layout/blocks/block_radio_group.dart';
 import 'package:block_dialog/src/layout/blocks/block_text.dart';
 import 'package:block_dialog/src/layout/block_row.dart';
@@ -121,6 +121,12 @@ class BlockDialogController {
     return true;
   }
 
+  Future<void> performButtonTap(String blockTag) async {
+    final block = getBlockByTagAs<BlockButton>(blockTag);
+    if (block == null) return;
+    await block.handleTap(this);
+  }
+
   /// Enable or disable a tagged [BlockButton]. Returns true on success.
   bool setBlockButtonEnabled(String blockTag, bool enabled) {
     final block = getBlockByTagAs<BlockButton>(blockTag);
@@ -174,73 +180,74 @@ class BlockDialogController {
     return block.setOptionEnabled(option, enabled);
   }
 
-  /// Update the text of a tagged [BlockInputField]. Returns true on success.
-  bool setBlockInputFieldText(String blockTag, String text) {
-    final block = getBlockByTagAs<BlockInputField>(blockTag);
+  /// Update the text of a tagged [BlockTextField]. Returns true on success.
+  bool setBlockTextFieldText(String blockTag, String text) {
+    final block = getBlockByTagAs<BlockTextField>(blockTag);
     if (block == null) return false;
     block.setText(text);
     return true;
   }
 
-  /// Update the text of a tagged [BlockInputField]. Returns true on success.
-  bool appendBlockInputFieldText(String blockTag, String text) {
-    final block = getBlockByTagAs<BlockInputField>(blockTag);
+  /// Update the text of a tagged [BlockTextField]. Returns true on success.
+  bool appendBlockTextFieldText(String blockTag, String text) {
+    final block = getBlockByTagAs<BlockTextField>(blockTag);
     if (block == null) return false;
     block.appendText(text);
     return true;
   }
 
-  /// Update the error text of a tagged [BlockInputField]. Returns true on success.
-  bool setBlockInputFieldErrorText(String blockTag, String? errorText) {
-    final block = getBlockByTagAs<BlockInputField>(blockTag);
+  /// Update the error text of a tagged [BlockTextField]. Returns true on success.
+  bool setBlockTextFieldErrorText(String blockTag, String? errorText) {
+    final block = getBlockByTagAs<BlockTextField>(blockTag);
     if (block == null) return false;
     block.setErrorText(errorText);
     return true;
   }
 
-  /// Enable or disable a tagged [BlockInputField]. Returns true on success.
-  bool setBlockInputFieldEnabled(String blockTag, bool enabled) {
-    final block = getBlockByTagAs<BlockInputField>(blockTag);
+  /// Enable or disable a tagged [BlockTextField]. Returns true on success.
+  bool setBlockTextFieldEnabled(String blockTag, bool enabled) {
+    final block = getBlockByTagAs<BlockTextField>(blockTag);
     if (block == null) return false;
     block.setEnabled(enabled);
     return true;
   }
 
-  /// Set read-only on a tagged [BlockInputField]. Returns true on success.
-  bool setBlockInputFieldReadOnly(String blockTag, bool readOnly) {
-    final block = getBlockByTagAs<BlockInputField>(blockTag);
+  /// Set read-only on a tagged [BlockTextField]. Returns true on success.
+  bool setBlockTextFieldReadOnly(String blockTag, bool readOnly) {
+    final block = getBlockByTagAs<BlockTextField>(blockTag);
     if (block == null) return false;
     block.setReadOnly(readOnly);
     return true;
   }
 
-  /// Clear the text of a tagged [BlockInputField]. Returns true on success.
-  bool clearBlockInputField(String blockTag) {
-    final block = getBlockByTagAs<BlockInputField>(blockTag);
+  /// Clear the text of a tagged [BlockTextField]. Returns true on success.
+  bool clearBlockTextField(String blockTag) {
+    final block = getBlockByTagAs<BlockTextField>(blockTag);
     if (block == null) return false;
     block.clear();
     return true;
   }
 
-  /// Request focus on a tagged [BlockInputField]. Returns true on success.
-  bool focusBlockInputField(String blockTag) {
-    final block = getBlockByTagAs<BlockInputField>(blockTag);
+  /// Request focus on a tagged [BlockTextField]. Returns true on success.
+  bool focusBlockTextField(String blockTag) {
+    final block = getBlockByTagAs<BlockTextField>(blockTag);
     if (block == null) return false;
     block.focus();
     return true;
   }
 
-  /// Unfocus a tagged [BlockInputField]. Returns true on success.
-  bool unfocusBlockInputField(String blockTag) {
-    final block = getBlockByTagAs<BlockInputField>(blockTag);
+  /// Unfocus a tagged [BlockTextField]. Returns true on success.
+  bool unfocusBlockTextField(String blockTag) {
+    final block = getBlockByTagAs<BlockTextField>(blockTag);
     if (block == null) return false;
     block.unfocus();
     return true;
   }
 
-  BlockCustomController? getBlockCustomController(String blockTag) {
+  T? getBlockCustomController<T extends BlockCustomController>(
+      String blockTag) {
     final block = getBlockByTagAs<BlockCustom>(blockTag);
-    return block?.blockController;
+    return block?.blockController as T?;
   }
 
   void shakeBlock(String blockTag) {

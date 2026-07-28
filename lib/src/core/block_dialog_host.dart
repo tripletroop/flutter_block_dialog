@@ -13,6 +13,7 @@ class BlockDialogHost extends StatefulWidget {
     required this.rows,
     this.configs = const DialogConfig(),
     this.barrierDismissible = true,
+    this.errorBuilder,
   });
 
   /// Blocks laid out inside the dialog.
@@ -20,6 +21,10 @@ class BlockDialogHost extends StatefulWidget {
 
   /// Visual styling and animation configuration.
   final DialogConfig configs;
+
+  /// Optional custom error builder for displaying validation errors.
+  final Widget Function(
+      String errorMessage, VoidCallback hideError, double? width)? errorBuilder;
 
   /// Whether tapping the barrier should dismiss the dialog.
   final bool barrierDismissible;
@@ -68,7 +73,7 @@ class _BlockDialogHostState extends State<BlockDialogHost>
     });
   }
 
-  void clearError() {
+  void hideError() {
     if (_errorMessage != null) {
       setState(() {
         _errorMessage = null;
@@ -154,11 +159,16 @@ class _BlockDialogHostState extends State<BlockDialogHost>
                             duration: const Duration(milliseconds: 250),
                             child: _errorMessage == null
                                 ? SizedBox.shrink()
-                                : DialogError(
-                                    errorMessage: _errorMessage!,
-                                    onClear: clearError,
-                                    width: widget.configs.width,
-                                  ),
+                                : (widget.errorBuilder?.call(
+                                      _errorMessage!,
+                                      hideError,
+                                      widget.configs.width,
+                                    ) ??
+                                    DialogError(
+                                      errorMessage: _errorMessage!,
+                                      onClear: hideError,
+                                      width: widget.configs.width,
+                                    )),
                           ),
                         ],
                       ),

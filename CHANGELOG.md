@@ -1,9 +1,36 @@
-## [2.0.2] - 2026-07-21
+## 3.0.0
+
+### 💥 Breaking Changes
+
+- Renamed `InputField` to `TextField` to better match Flutter's naming conventions.
+
+### ✨ New Features
+
+- Added a function to `BlockDialogController` that allows other blocks to trigger a `BlockButton`'s `onTap` callback.
+- Added an optional `errorBuilder` parameter to `showDialog()`, allowing complete customization of the dialog error UI.
+
+### Migration Guide
+
+Replace all usages of:
+
+```dart
+InputField(...)
+```
+
+with:
+
+```dart
+TextField(...)
+```
+
+No other API changes are required.
+
+## [2.0.2]
 
 - `BlockButton` can now accept loadingWidget in case the user want to provide his own loading widget
 - Merged `Block`'s attributes `resultID` and `blockTag` into single value which is `blockTag`
 
-## [2.0.0] - 2026-07-19
+## [2.0.0]
 
 ### ⚠️ Breaking Changes
 
