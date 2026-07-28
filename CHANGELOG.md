@@ -1,3 +1,7 @@
+## 3.0.1
+
+- Added pub.dev topics to improve package discoverability.
+
 ## 3.0.0
 
 ### 💥 Breaking Changes
