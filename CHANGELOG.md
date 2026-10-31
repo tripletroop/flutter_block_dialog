@@ -1,3 +1,26 @@
+## 3.1.0
+
+### Added
+
+- Added `freeze` support to `BlockRow` as a tri-state flag (`true` / `false` / `null`) to control whether a row is outside the scrollable area.
+- Added default freeze behavior when `freeze` is not set:
+  - first row is frozen if it contains a single `BlockText` with `isDialogTitle: true`
+  - last row is frozen if it contains only `BlockButton` blocks
+- Added `BlockRow.copyWith(...)`.
+
+### Changed
+
+- `BlockDialogContent` now supports mixed layout sections:
+  - frozen rows at the top
+  - a scrollable middle section
+  - frozen rows at the bottom
+- Frozen-row placement is now validated and throws a `FlutterError` when frozen rows are placed in the middle.
+
+### Fixed
+
+- Fixed `matchBlocksHeight` wiring by stretching row children when enabled, so shorter blocks correctly match the tallest block in the row.
+- Added/updated widget tests for frozen rows and `matchBlocksHeight` behavior.
+
 ## 3.0.1
 
 - Added pub.dev topics to improve package discoverability.

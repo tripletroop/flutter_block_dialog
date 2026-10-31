@@ -70,4 +70,42 @@ class DialogConfig {
     this.blockAnimation = const SlideBlockAnimation(),
     this.barrierColor = const Color(0xB3000000),
   });
+
+  DialogConfig copyWith({
+    Color? backgroundColor,
+    Color? backgroundColorPressed,
+    Color? strokeColor,
+    double? strokeWidth,
+    double? borderRadius,
+    double? blocksSpacing,
+    BlockAnimation? blockAnimation,
+    Duration? animationDuration,
+    Color? barrierColor,
+    TextDirection? textDirection,
+    EdgeInsetsGeometry? childrenPadding,
+    double? width,
+    double? maxHeight,
+    TextStyle? textStyle,
+    double? defaultMinBlockHeight,
+  }) {
+    return DialogConfig(
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      backgroundColorPressed:
+          backgroundColorPressed ?? this.backgroundColorPressed,
+      strokeColor: strokeColor ?? this.strokeColor,
+      strokeWidth: strokeWidth ?? this.strokeWidth,
+      borderRadius: borderRadius ?? this.borderRadius,
+      blocksSpacing: blocksSpacing ?? this.blocksSpacing,
+      blockAnimation: blockAnimation ?? this.blockAnimation,
+      animationDuration: animationDuration ?? this.animationDuration,
+      barrierColor: barrierColor ?? this.barrierColor,
+      textDirection: textDirection ?? this.textDirection,
+      childrenPadding: childrenPadding ?? this.childrenPadding,
+      width: width ?? this.width,
+      maxHeight: maxHeight ?? this.maxHeight,
+      textStyle: textStyle ?? this.textStyle,
+      defaultMinBlockHeight:
+          defaultMinBlockHeight ?? this.defaultMinBlockHeight,
+    );
+  }
 }

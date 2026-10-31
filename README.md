@@ -16,7 +16,7 @@ Add to `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  block_dialog: ^2.0.2
+  block_dialog: ^3.1.0
 ```
 
 ## Preview
@@ -34,7 +34,7 @@ BlockDialog.show(
   context,
   rows: [
     BlockRow(blocks: [
-      BlockText(text: 'Create account?', isDialogTitle: true),
+      BlockText('Create account?', isDialogTitle: true),
     ]),
     BlockRow(blocks: [
       BlockTextField(blockTag: 'email', hintText: 'Email'),
@@ -45,9 +45,8 @@ BlockDialog.show(
     BlockRow(blocks: [
       BlockButton(
         label: 'Continue',
-        isPositive: true,
-        onPressed: (results) {
-          final email = result.get<String>('email');
+        onPressed: (results, dialogController) {
+          final email = results.getValue<String>(blockTag: 'email');
         },
       ),
       BlockButton(
@@ -139,6 +138,74 @@ BlockCustom(
     return const Center(child: Text('Custom'));
   },
 )
+```
+
+## Frozen Rows (Non-scrollable rows)
+
+Use `freeze` on `BlockRow` to control if it stays outside the scrollable section.
+
+- `freeze: true` → always frozen.
+- `freeze: false` → never frozen.
+- `freeze: null` (default) → automatic behavior:
+  - first row is frozen when it contains a single `BlockText` with `isDialogTitle: true`
+  - last row is frozen when it contains only `BlockButton` blocks
+
+- Frozen rows are allowed only at the beginning and/or the end of `rows`.
+- Frozen rows in the middle are invalid.
+
+Automatic freeze example (`freeze` omitted):
+
+```dart
+BlockDialog.show(
+  context,
+  rows: [
+    BlockRow(blocks: [BlockText('Create account', isDialogTitle: true)]), // auto-frozen
+    BlockRow(blocks: [BlockTextField(blockTag: 'email')]), // scrollable
+    BlockRow(
+      blocks: [BlockButton(label: 'Cancel'), BlockButton(label: 'Continue')], // auto-frozen
+    ),
+  ],
+);
+```
+
+```dart
+BlockDialog.show(
+  context,
+  rows: [
+    BlockRow(
+      freeze: true,
+      blocks: [BlockText('Header', isDialogTitle: true)],
+    ),
+    BlockRow(blocks: [BlockText('Scrollable content')]),
+    BlockRow(blocks: [BlockTextField(blockTag: 'email')]),
+    BlockRow(
+      freeze: true,
+      blocks: [BlockButton(label: 'Done')],
+    ),
+  ],
+);
+```
+
+Disable automatic freeze:
+
+```dart
+BlockRow(
+  freeze: false,
+  blocks: [BlockText('Title', isDialogTitle: true)],
+)
+```
+
+## BlockRow.copyWith
+
+```dart
+final footerRow = BlockRow(
+  blocks: [BlockButton(label: 'Cancel')],
+);
+
+final positiveFooterRow = footerRow.copyWith(
+  blocks: [BlockButton(label: 'Continue', isPositive: true)],
+  freeze: true,
+);
 ```
 
 ## Example Project

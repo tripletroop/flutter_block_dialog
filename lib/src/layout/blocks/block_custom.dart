@@ -3,13 +3,6 @@ import 'package:block_dialog/src/theme/dialog_config.dart';
 import 'package:block_dialog/src/core/block_dialog_controller.dart';
 import 'package:flutter/material.dart';
 
-typedef BlockCustomBuilder = Widget Function(
-  BuildContext context,
-  BlockDialogController dialogController,
-  BlockCustomController? blockController,
-  DialogConfig configs,
-);
-
 /// Abstract base class for custom block controllers.
 /// Extend this class to create a controller for your BlockCustom widget.
 abstract class BlockCustomController extends ChangeNotifier {
@@ -31,7 +24,7 @@ abstract class BlockCustomController extends ChangeNotifier {
   }
 }
 
-class BlockCustom extends Block {
+class BlockCustom<T extends BlockCustomController> extends Block {
   /// Custom block for embedding any widget with a custom controller.
   /// The blockController must extend [BlockCustomController] and implement [buildResult].
   /// This allows you to:
@@ -50,11 +43,16 @@ class BlockCustom extends Block {
 
   /// The custom controller instance for this block.
   /// Must extend [BlockCustomController] and implement [buildResult].
-  final BlockCustomController? blockController;
+  final T? blockController;
 
   /// Builder function that creates the widget for this block.
   /// Receives the controller and dialog config for customization.
-  final BlockCustomBuilder builder;
+  final Widget Function(
+    BuildContext context,
+    BlockDialogController dialogController,
+    T? blockController,
+    DialogConfig configs,
+  ) builder;
 
   /// Whether to apply dialog background/stroke decoration to this block.
   final bool matchDialogTheme;

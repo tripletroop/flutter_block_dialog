@@ -25,7 +25,7 @@ class _StretchHarnessState extends State<_StretchHarness>
             minHeight: 40,
             builder: (_, __, ___, ____) {
               return const SizedBox(
-                key: Key('tall-block'),
+                key: Key('tall-inner'),
                 height: 120,
               );
             },
@@ -33,13 +33,10 @@ class _StretchHarnessState extends State<_StretchHarness>
           BlockCustom(
             minHeight: 40,
             builder: (_, __, ___, ____) {
-              return const Align(
-                key: Key('short-block'),
-                alignment: Alignment.center,
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                ),
+              return const SizedBox(
+                key: Key('short-inner'),
+                width: 20,
+                height: 20,
               );
             },
           ),
@@ -90,13 +87,31 @@ void main() {
 
       expect(tester.takeException(), isNull);
 
-      final tallHeight =
-          tester.getSize(find.byKey(const Key('tall-block'))).height;
-      final shortHeight =
-          tester.getSize(find.byKey(const Key('short-block'))).height;
+      final tallInnerHeight =
+          tester.getSize(find.byKey(const Key('tall-inner'))).height;
+      final shortInnerHeight =
+          tester.getSize(find.byKey(const Key('short-inner'))).height;
+      final tallOuterHeight = tester
+          .getSize(find
+              .ancestor(
+                of: find.byKey(const Key('tall-inner')),
+                matching: find.byType(Container),
+              )
+              .first)
+          .height;
+      final shortOuterHeight = tester
+          .getSize(find
+              .ancestor(
+                of: find.byKey(const Key('short-inner')),
+                matching: find.byType(Container),
+              )
+              .first)
+          .height;
 
-      expect(tallHeight, 120);
-      expect(shortHeight, tallHeight);
+      expect(tallInnerHeight, 120);
+      expect(shortInnerHeight, tallInnerHeight);
+      expect(shortOuterHeight, tallOuterHeight);
+      expect(tallOuterHeight, greaterThanOrEqualTo(tallInnerHeight));
     },
   );
 }
