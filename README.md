@@ -70,6 +70,7 @@ BlockDialog.show(
 ## Blocks interaction through the `DialogController`
 
 - `Block`
+  - rebuildBlock
   - shakeBlock
 - `BlockText`
   - setBlockText

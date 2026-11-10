@@ -1,3 +1,16 @@
+## 4.0.0
+
+- Added
+  - Block Rebuilding: Added rebuildBlock(String blockTag) to BlockDialogController, allowing individual blocks to be rebuilt programmatically using their unique tags.
+
+  - Controller Access in Radio Group: Extended BlockRadioGroup.itemBuilder to provide access to BlockDialogController, enabling dynamic generation of radio group items based on the results of other blocks.
+
+- Changed
+  - Updated the Block superclass to support programmatic rebuilding of individual blocks.
+
+- Breaking Changes
+  - BlockRadioGroup.itemBuilder now accepts four parameters instead of three. Existing implementations must be updated to include the BlockDialogController parameter.
+
 ## 3.1.0
 
 ### Added

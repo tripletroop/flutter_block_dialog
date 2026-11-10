@@ -250,6 +250,10 @@ class BlockDialogController {
     return block?.blockController as T?;
   }
 
+  void rebuildBlock(String blockTag) {
+    getBlockByTag(blockTag)?.rebuild();
+  }
+
   void shakeBlock(String blockTag) {
     getBlockByTag(blockTag)?.shake();
   }

@@ -48,8 +48,8 @@ class BlockRadioGroup<T> extends Block {
   final List<T> _options;
 
   final void Function(T? value, BlockDialogController controller)? onChanged;
-  final Widget Function(T option, bool selected, DialogConfig configs)?
-      itemBuilder;
+  final Widget Function(T option, bool selected, DialogConfig configs,
+      BlockDialogController controller)? itemBuilder;
   final String Function(T option)? labelBuilder;
 
   /// Optional mouse cursor for the radio tile.
@@ -205,7 +205,7 @@ class BlockRadioGroup<T> extends Block {
                   controlAffinity: controlAffinity,
                   titleAlignment: titleAlignment,
                   title: itemBuilder != null
-                      ? itemBuilder!(option, selected, configs)
+                      ? itemBuilder!(option, selected, configs, controller)
                       : Text(label,
                           style: (configs.textStyle ?? TextStyle()).merge(
                               TextStyle(

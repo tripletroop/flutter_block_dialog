@@ -18,7 +18,7 @@ class _ShakeBlock extends Block {
 class _ShakeHost extends StatelessWidget {
   const _ShakeHost({required this.block, required this.controller});
 
-  final _ShakeBlock block;
+  final Block block;
   final BlockDialogController controller;
 
   @override
@@ -39,6 +39,22 @@ double _currentShakeOffsetX(WidgetTester tester) {
   );
   final transform = tester.widget<Transform>(transformFinder.first);
   return transform.transform.getTranslation().x;
+}
+
+class _RebuildBlock extends Block {
+  _RebuildBlock() : super(flex: 1);
+
+  int buildCount = 0;
+
+  @override
+  Widget buildContent(
+    BuildContext context,
+    BlockDialogController controller,
+    DialogConfig configs,
+  ) {
+    buildCount++;
+    return const SizedBox(height: 50);
+  }
 }
 
 void main() {
@@ -79,5 +95,34 @@ void main() {
     await tester.pump(const Duration(milliseconds: 350));
 
     expect(_currentShakeOffsetX(tester), closeTo(0, 0.1));
+  });
+
+  testWidgets('Block.rebuild rebuilds content without shake animation',
+      (tester) async {
+    final block = _RebuildBlock();
+    final controller = BlockDialogController();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: _ShakeHost(block: block, controller: controller),
+        ),
+      ),
+    );
+
+    final initialBuildCount = block.buildCount;
+    expect(initialBuildCount, greaterThan(0));
+
+    block.rebuild();
+    await tester.pump();
+
+    expect(block.buildCount, greaterThan(initialBuildCount));
+    expect(
+      find.descendant(
+        of: find.byKey(const ValueKey<String>('shake-host')),
+        matching: find.byType(Transform),
+      ),
+      findsNothing,
+    );
   });
 }

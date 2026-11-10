@@ -42,6 +42,7 @@ abstract class Block {
 
   /// Increments to replay a one-shot shake animation on demand.
   final ValueNotifier<int> _shakeTick = ValueNotifier<int>(0);
+  final ValueNotifier<int> _rebuildTick = ValueNotifier<int>(0);
 
   Block({
     required this.flex,
@@ -53,6 +54,10 @@ abstract class Block {
   /// Shake this block horizontally to attract attention.
   void shake() {
     _shakeTick.value = _shakeTick.value + 1;
+  }
+
+  void rebuild() {
+    _rebuildTick.value = _rebuildTick.value + 1;
   }
 
   /// Build the widget content for this block.
@@ -100,34 +105,37 @@ abstract class Block {
     DialogConfig configs,
     double blockMinHeight,
   ) {
-    return BlockShakeWrapper(
-      shakeTick: _shakeTick,
-      child: AnimatedBlockWrapper(
-        position: override?.animationPosition ?? _position,
-        animationController: controller.animation,
-        blockAnimation: override?.customAnimation ?? configs.blockAnimation,
-        child: Container(
-          width: double.infinity,
-          padding: this is BlockButton
-              ? EdgeInsetsGeometry.zero
-              : override?.padding ?? configs.childrenPadding,
-          constraints: BoxConstraints(minHeight: blockMinHeight),
-          decoration: _shouldAddDecoration()
-              ? DecorationBuilder.build(
-                  borderRadius: borderRadius,
-                  configs: configs,
-                )
-              : null,
-          child: Builder(builder: (context) {
-            if (configs.textDirection != null) {
-              return Directionality(
-                  textDirection: configs.textDirection!,
-                  child: buildContent(context, controller, configs));
-            }
-            return buildContent(context, controller, configs);
-          }),
-        ),
-      ).build(context),
+    return ValueListenableBuilder<int>(
+      valueListenable: _rebuildTick,
+      builder: (_, __, ___) => BlockShakeWrapper(
+        shakeTick: _shakeTick,
+        child: AnimatedBlockWrapper(
+          position: override?.animationPosition ?? _position,
+          animationController: controller.animation,
+          blockAnimation: override?.customAnimation ?? configs.blockAnimation,
+          child: Container(
+            width: double.infinity,
+            padding: this is BlockButton
+                ? EdgeInsetsGeometry.zero
+                : override?.padding ?? configs.childrenPadding,
+            constraints: BoxConstraints(minHeight: blockMinHeight),
+            decoration: _shouldAddDecoration()
+                ? DecorationBuilder.build(
+                    borderRadius: borderRadius,
+                    configs: configs,
+                  )
+                : null,
+            child: Builder(builder: (context) {
+              if (configs.textDirection != null) {
+                return Directionality(
+                    textDirection: configs.textDirection!,
+                    child: buildContent(context, controller, configs));
+              }
+              return buildContent(context, controller, configs);
+            }),
+          ),
+        ).build(context),
+      ),
     );
   }
 }
