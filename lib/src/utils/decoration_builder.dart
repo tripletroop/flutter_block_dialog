@@ -1,6 +1,6 @@
 import 'package:block_dialog/src/layout/blocks/block.dart';
 import 'package:block_dialog/src/theme/dialog_config.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class DecorationBuilder {
   /// Build the default block decoration from [DialogConfig].

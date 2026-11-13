@@ -7,7 +7,7 @@ import 'package:block_dialog/src/layout/blocks/block_text_field.dart';
 import 'package:block_dialog/src/layout/blocks/block_radio_group.dart';
 import 'package:block_dialog/src/layout/blocks/block_text.dart';
 import 'package:block_dialog/src/theme/dialog_config.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _ValueBlock extends Block {

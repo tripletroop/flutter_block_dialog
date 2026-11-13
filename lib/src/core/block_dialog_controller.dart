@@ -8,7 +8,7 @@ import 'package:block_dialog/src/layout/blocks/block_text.dart';
 import 'package:block_dialog/src/layout/block_row.dart';
 import 'package:block_dialog/src/models/blocks_result.dart';
 import 'package:block_dialog/src/utils/position_resolver.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class BlockDialogController {
   /// Controller that coordinates block positions, values, and animations.

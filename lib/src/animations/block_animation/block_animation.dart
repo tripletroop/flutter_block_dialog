@@ -5,7 +5,7 @@ import 'package:block_dialog/src/animations/block_animation/slide_block_animatio
 import 'package:block_dialog/src/animations/block_animation/cinematic_block_animation.dart';
 import 'package:block_dialog/src/animations/block_animation/expand_corner_block_animation.dart';
 import 'package:block_dialog/src/layout/blocks/block.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 abstract class BlockAnimation {
   /// Base class for block entrance/exit animations.

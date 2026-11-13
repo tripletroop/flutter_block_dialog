@@ -7,7 +7,7 @@ import 'package:block_dialog/src/models/block_override.dart';
 import 'package:block_dialog/src/theme/dialog_config.dart';
 import 'package:block_dialog/src/utils/decoration_builder.dart';
 import 'package:block_dialog/src/core/block_dialog_controller.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Resolved position of a block inside the dialog grid.
 enum BlockPosition {

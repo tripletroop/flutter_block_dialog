@@ -4,7 +4,7 @@ import 'package:block_dialog/src/layout/blocks/block.dart';
 import 'package:block_dialog/src/models/blocks_result.dart';
 import 'package:block_dialog/src/theme/dialog_config.dart';
 import 'package:block_dialog/src/core/block_dialog_controller.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 typedef BlockPressedCallback = FutureOr<String?> Function(
     BlocksResult result, BlockDialogController controller);

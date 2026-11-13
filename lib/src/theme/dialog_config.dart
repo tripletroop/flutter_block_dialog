@@ -1,6 +1,6 @@
 import 'package:block_dialog/src/animations/block_animation/block_animation.dart';
 import 'package:block_dialog/src/animations/block_animation/slide_block_animation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class DialogConfig {
   /// Default block background color.

@@ -1,7 +1,7 @@
 import 'package:block_dialog/src/core/block_dialog_controller.dart';
 import 'package:block_dialog/src/layout/blocks/block.dart';
 import 'package:block_dialog/src/theme/dialog_config.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class BlockSpacer extends Block {
   /// Spacer block for vertical gaps inside dialogs.

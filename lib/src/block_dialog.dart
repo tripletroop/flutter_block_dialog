@@ -4,7 +4,7 @@ import 'package:block_dialog/src/core/block_dialog_host.dart';
 import 'package:block_dialog/src/layout/block_row.dart';
 import 'package:block_dialog/src/models/blocks_result.dart';
 import 'package:block_dialog/src/theme/dialog_config.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Public API for showing block-based dialogs.
 class BlockDialog {

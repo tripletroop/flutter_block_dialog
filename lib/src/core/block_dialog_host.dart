@@ -4,7 +4,7 @@ import 'package:block_dialog/src/theme/dialog_config.dart';
 import 'package:block_dialog/src/core/block_dialog_content.dart';
 import 'package:block_dialog/src/core/block_dialog_controller.dart';
 import 'package:block_dialog/src/widgets/dialog_error.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class BlockDialogHost extends StatefulWidget {
   /// Host widget that renders the dialog, dimmed barrier, and content.

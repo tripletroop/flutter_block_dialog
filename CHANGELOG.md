@@ -1,3 +1,8 @@
+## 5.0.0
+
+- Breaking Changes
+  - Migrated to material_ui, replacing the legacy Material UI compatibility layer.
+
 ## 4.0.0
 
 - Added

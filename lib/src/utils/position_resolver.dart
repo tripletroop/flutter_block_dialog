@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:block_dialog/src/layout/blocks/block.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class PositionResolvingData {
   /// Zero-based row index of the block.

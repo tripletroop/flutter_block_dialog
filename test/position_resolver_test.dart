@@ -1,6 +1,6 @@
 import 'package:block_dialog/src/utils/position_resolver.dart';
 import 'package:block_dialog/src/layout/blocks/block.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

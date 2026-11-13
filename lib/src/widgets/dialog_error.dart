@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class DialogError extends StatelessWidget {
   /// Error banner shown beneath the dialog when validation fails.

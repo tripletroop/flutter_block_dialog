@@ -1,16 +1,16 @@
 name: block_dialog
 description: "Block-based, animated dialogs for Flutter with composable layout,
   typed results, and fine-grained dismissal control."
-version: 4.0.0
+version: 5.0.0
 homepage: https://github.com/tripletroop/flutter_block_dialog
 repository: https://github.com/tripletroop/flutter_block_dialog
 
 topics:
+  - flutter
   - dialog
-  - forms
-  - material
-  - ui
-  - widgets
+  - dialogs
+  - material-design
+  - ui-components
 
 environment:
   sdk: ">=2.17.0 <4.0.0"
@@ -19,6 +19,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  material_ui: ^1.11.0
 
 dev_dependencies:
   flutter_test:

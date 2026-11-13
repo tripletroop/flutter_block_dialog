@@ -1,6 +1,6 @@
 import 'package:block_dialog/src/animations/block_animation/block_animation.dart';
 import 'package:block_dialog/src/layout/blocks/block.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class AnimatedBlockWrapper extends StatelessWidget {
   /// Wraps a block with the configured animation.

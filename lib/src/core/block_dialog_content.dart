@@ -6,7 +6,7 @@ import 'package:block_dialog/src/layout/blocks/block_button.dart';
 import 'package:block_dialog/src/layout/blocks/block_text.dart';
 import 'package:block_dialog/src/theme/dialog_config.dart';
 import 'package:block_dialog/src/utils/intersperse_extension.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class BlockDialogContent extends StatelessWidget {
   /// Pure widget that lays out the rows of blocks.

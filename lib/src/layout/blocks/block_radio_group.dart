@@ -1,7 +1,7 @@
 import 'package:block_dialog/src/layout/blocks/block.dart';
 import 'package:block_dialog/src/theme/dialog_config.dart';
 import 'package:block_dialog/src/core/block_dialog_controller.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Radio group block that stores a single selected value of type [T].
 class BlockRadioGroup<T> extends Block {
