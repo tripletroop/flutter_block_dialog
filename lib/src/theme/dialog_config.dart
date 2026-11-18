@@ -1,5 +1,5 @@
 import 'package:block_dialog/src/animations/block_animation/block_animation.dart';
-import 'package:block_dialog/src/animations/block_animation/slide_block_animation.dart';
+import 'package:block_dialog/src/animations/block_animation/scale_block_animation.dart';
 import 'package:material_ui/material_ui.dart';
 
 class DialogConfig {
@@ -66,8 +66,8 @@ class DialogConfig {
     this.textDirection,
     this.defaultMinBlockHeight = 50.0,
     this.childrenPadding = const EdgeInsets.all(5),
-    this.animationDuration = const Duration(milliseconds: 400),
-    this.blockAnimation = const SlideBlockAnimation(),
+    this.animationDuration = const Duration(milliseconds: 700),
+    this.blockAnimation = const ScaleBlockAnimation(),
     this.barrierColor = const Color(0xB3000000),
   });
 

@@ -50,6 +50,7 @@ class _BlockDialogHostState extends State<BlockDialogHost>
     _animationController = AnimationController(
       vsync: this,
       duration: widget.configs.animationDuration,
+      reverseDuration: widget.configs.animationDuration * 0.7,
     );
     _controller.initialize(
       rows: widget.rows,

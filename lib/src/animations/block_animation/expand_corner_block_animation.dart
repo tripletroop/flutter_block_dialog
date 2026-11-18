@@ -1,4 +1,5 @@
 import 'package:block_dialog/src/animations/block_animation/block_animation.dart';
+import 'package:block_dialog/src/animations/block_animation_utils.dart';
 import 'package:block_dialog/src/layout/blocks/block.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -67,12 +68,11 @@ class ExpandCornerBlockAnimation extends BlockAnimation {
       animation: curved,
       builder: (_, __) {
         final t = curved.value;
-        final scale = scaleTween.evaluate(curved);
         return Opacity(
-          opacity: Curves.easeOutCubic.transform(t),
+          opacity: BlockAnimationUtils.fadeFor(animation),
           child: Transform.scale(
             alignment: alignment,
-            scale: scale,
+            scale: scaleTween.transform(t),
             child: child,
           ),
         );

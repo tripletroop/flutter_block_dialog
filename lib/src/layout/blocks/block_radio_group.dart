@@ -20,7 +20,7 @@ class BlockRadioGroup<T> extends Block {
     this.splashRadius,
     this.materialTapTargetSize,
     this.visualDensity = VisualDensity.compact,
-    this.focusNode,
+    this.focusNodeBuilder,
     this.autofocus = false,
     this.tileColor,
     this.selectedTileColor,
@@ -30,20 +30,26 @@ class BlockRadioGroup<T> extends Block {
     this.contentPadding = const EdgeInsets.symmetric(horizontal: 12.0),
     this.shape,
     this.controlAffinity = ListTileControlAffinity.platform,
-    this.titleAlignment,
+    this.tileTitleAlignment,
     this.textStyle,
     this.selectedStyle,
+    String? title,
+    this.titleBuilder,
+    this.titleStyle,
+    this.titlePadding = const EdgeInsets.fromLTRB(12, 0, 12, 4),
     super.flex = 1,
     super.blockTag,
     super.override,
     super.minHeight,
   })  : assert(options.contains(initialValue) || initialValue == null,
             'initialValue must be one of the options or null'),
-        assert(options.length > 1, 'options must contain at least 2 items'),
+        assert(options.length > 1, 'options must contain at least 2 elements'),
         _options = options,
         _notifier = ValueNotifier(RadioGroupChangeableValues<T>(
           value: initialValue,
-        ));
+          title: title,
+        )),
+        _autofocusTarget = autofocus ? (initialValue ?? options.first) : null;
 
   final List<T> _options;
 
@@ -51,6 +57,18 @@ class BlockRadioGroup<T> extends Block {
   final Widget Function(T option, bool selected, DialogConfig configs,
       BlockDialogController controller)? itemBuilder;
   final String Function(T option)? labelBuilder;
+
+  /// Current title shown above the options, or null if none.
+  String? get title => _notifier.value.title;
+
+  /// Optional custom title widget; takes precedence over the built-in title
+  /// text. Always called, even when the current title is null, so the builder
+  /// must handle null (e.g. return `SizedBox.shrink()`).
+  final Widget Function(String? title, DialogConfig configs,
+      BlockDialogController controller)? titleBuilder;
+
+  final TextStyle? titleStyle;
+  final EdgeInsetsGeometry titlePadding;
 
   /// Optional mouse cursor for the radio tile.
   final MouseCursor? mouseCursor;
@@ -76,11 +94,22 @@ class BlockRadioGroup<T> extends Block {
   /// Optional visual density.
   final VisualDensity? visualDensity;
 
-  /// Optional focus node.
-  final FocusNode? focusNode;
+  /// Returns the [FocusNode] for an option's tile.
+  ///
+  /// Must return the same instance for the same option on every call
+  /// (e.g. from a map the caller owns). The caller is responsible for
+  /// disposing the nodes.
+  final FocusNode Function(T option)? focusNodeBuilder;
 
-  /// Whether this tile should autofocus.
+  /// Whether the group should request focus when first shown.
+  ///
+  /// Focus goes to the option matching `initialValue`, or the first option
+  /// if no initial value is given. If false, no option is focused
+  /// automatically. The target is fixed at construction and does not follow
+  /// later selection changes.
   final bool autofocus;
+
+  final T? _autofocusTarget;
 
   /// Optional tile background color.
   final Color? tileColor;
@@ -107,7 +136,7 @@ class BlockRadioGroup<T> extends Block {
   final ListTileControlAffinity controlAffinity;
 
   /// Optional title vertical alignment inside tile.
-  final ListTileTitleAlignment? titleAlignment;
+  final ListTileTitleAlignment? tileTitleAlignment;
 
   final TextStyle? textStyle;
   final TextStyle? selectedStyle;
@@ -124,8 +153,20 @@ class BlockRadioGroup<T> extends Block {
       return false;
     }
     if (_notifier.value.value == value) return true;
-    _notifier.value = _notifier.value.copyWith(value: value);
+    _notifier.value = _notifier.value.copyWith(
+      value: value,
+      clearValue: value == null,
+    );
     return true;
+  }
+
+  /// Update the title at runtime. Pass null to remove it.
+  void setTitle(String? title) {
+    if (_notifier.value.title == title) return;
+    _notifier.value = _notifier.value.copyWith(
+      title: title,
+      clearTitle: title == null,
+    );
   }
 
   /// Enable or disable a specific option at runtime.
@@ -161,7 +202,7 @@ class BlockRadioGroup<T> extends Block {
     BlockDialogController controller,
     DialogConfig configs,
   ) {
-    return ValueListenableBuilder<RadioGroupChangeableValues>(
+    return ValueListenableBuilder<RadioGroupChangeableValues<T>>(
       valueListenable: _notifier,
       builder: (context, changeableValues, _) {
         return RadioGroup<T>(
@@ -174,51 +215,67 @@ class BlockRadioGroup<T> extends Block {
             onChanged?.call(v, controller);
           },
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: _options.map((option) {
-              final selected = option == changeableValues.value;
-              final optionEnabled =
-                  !changeableValues.disabledOptions.contains(option);
-              final label = labelBuilder?.call(option) ?? option.toString();
-              return Material(
-                color: Colors.transparent,
-                child: RadioListTile<T>(
-                  value: option,
-                  enabled: optionEnabled,
-                  mouseCursor: mouseCursor,
-                  activeColor: activeColor,
-                  fillColor: fillColor,
-                  hoverColor: hoverColor,
-                  overlayColor: overlayColor,
-                  splashRadius: splashRadius,
-                  materialTapTargetSize: materialTapTargetSize,
-                  visualDensity: visualDensity,
-                  focusNode: focusNode,
-                  autofocus: autofocus,
-                  tileColor: tileColor,
-                  selectedTileColor: selectedTileColor,
-                  enableFeedback: enableFeedback,
-                  isThreeLine: isThreeLine,
-                  dense: dense,
-                  contentPadding: contentPadding,
-                  shape: shape,
-                  controlAffinity: controlAffinity,
-                  titleAlignment: titleAlignment,
-                  title: itemBuilder != null
-                      ? itemBuilder!(option, selected, configs, controller)
-                      : Text(label,
-                          style: (configs.textStyle ?? TextStyle()).merge(
-                              TextStyle(
-                                      fontWeight:
-                                          selected ? FontWeight.bold : null,
-                                      color: optionEnabled == false
-                                          ? Colors.grey
-                                          : null)
-                                  .merge(selectedStyle))),
-                ),
-              );
-            }).toList(),
-          ),
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (titleBuilder != null)
+                  titleBuilder!(changeableValues.title, configs, controller)
+                else if (changeableValues.title != null)
+                  Padding(
+                    padding: titlePadding,
+                    child: Text(
+                      changeableValues.title!,
+                      style: DefaultTextStyle.of(context)
+                          .style
+                          .merge(configs.textStyle)
+                          .merge(const TextStyle(fontWeight: FontWeight.w600))
+                          .merge(titleStyle),
+                    ),
+                  ),
+                ..._options.map((option) {
+                  final selected = option == changeableValues.value;
+                  final optionEnabled =
+                      !changeableValues.disabledOptions.contains(option);
+                  final label = labelBuilder?.call(option) ?? option.toString();
+                  return Material(
+                    color: Colors.transparent,
+                    child: RadioListTile<T>(
+                      value: option,
+                      enabled: optionEnabled,
+                      mouseCursor: mouseCursor,
+                      activeColor: activeColor,
+                      fillColor: fillColor,
+                      hoverColor: hoverColor,
+                      overlayColor: overlayColor,
+                      splashRadius: splashRadius,
+                      materialTapTargetSize: materialTapTargetSize,
+                      visualDensity: visualDensity,
+                      focusNode: focusNodeBuilder?.call(option),
+                      autofocus: autofocus && option == _autofocusTarget,
+                      tileColor: tileColor,
+                      selectedTileColor: selectedTileColor,
+                      enableFeedback: enableFeedback,
+                      isThreeLine: isThreeLine,
+                      dense: dense,
+                      contentPadding: contentPadding,
+                      shape: shape,
+                      controlAffinity: controlAffinity,
+                      titleAlignment: tileTitleAlignment,
+                      title: itemBuilder != null
+                          ? itemBuilder!(option, selected, configs, controller)
+                          : Text(label,
+                              style: (configs.textStyle ?? const TextStyle())
+                                  .merge(TextStyle(
+                                          fontWeight:
+                                              selected ? FontWeight.bold : null,
+                                          color: optionEnabled == false
+                                              ? Colors.grey
+                                              : null)
+                                      .merge(selectedStyle))),
+                    ),
+                  );
+                }),
+              ]),
         );
       },
     );
@@ -228,18 +285,24 @@ class BlockRadioGroup<T> extends Block {
 class RadioGroupChangeableValues<T> {
   RadioGroupChangeableValues({
     this.value,
+    this.title,
     this.disabledOptions = const {},
   });
 
   final T? value;
+  final String? title;
   final Set<T> disabledOptions;
 
   RadioGroupChangeableValues<T> copyWith({
     T? value,
+    bool clearValue = false,
+    String? title,
+    bool clearTitle = false,
     Set<T>? disabledOptions,
   }) {
-    return RadioGroupChangeableValues(
-      value: value ?? this.value,
+    return RadioGroupChangeableValues<T>(
+      value: clearValue ? null : (value ?? this.value),
+      title: clearTitle ? null : (title ?? this.title),
       disabledOptions: disabledOptions ?? this.disabledOptions,
     );
   }

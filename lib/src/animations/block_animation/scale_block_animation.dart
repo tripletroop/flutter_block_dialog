@@ -1,4 +1,5 @@
 import 'package:block_dialog/src/animations/block_animation/block_animation.dart';
+import 'package:block_dialog/src/animations/block_animation_utils.dart';
 import 'package:block_dialog/src/layout/blocks/block.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -25,11 +26,6 @@ class ScaleBlockAnimation extends BlockAnimation {
     required Animation<double> animation,
   }) {
     final startScale = _scaleFor(position);
-    final curved = CurvedAnimation(
-      parent: animation,
-      curve: Curves.linear,
-      reverseCurve: Curves.linear,
-    );
 
     final scaleTween = TweenSequence<double>([
       TweenSequenceItem(
@@ -45,14 +41,18 @@ class ScaleBlockAnimation extends BlockAnimation {
     ]);
 
     return AnimatedBuilder(
-      animation: curved,
-      builder: (_, __) {
-        final t = curved.value;
-        final scale = scaleTween.evaluate(curved);
+      animation: animation,
+      child: child,
+      builder: (_, child) {
+        final t = BlockAnimationUtils.directionalCurve(
+          animation,
+          forward: Curves.linear, // the TweenSequence below already eases it
+          reverse: Curves.easeInCubic,
+        );
         return Opacity(
-          opacity: Curves.linear.transform(t),
+          opacity: BlockAnimationUtils.fadeFor(animation),
           child: Transform.scale(
-            scale: scale,
+            scale: scaleTween.transform(t),
             child: Transform.translate(
               offset: Offset(0, _lift * (1 - t)),
               child: child,

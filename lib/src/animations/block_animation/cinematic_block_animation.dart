@@ -1,11 +1,12 @@
 import 'dart:ui';
 
 import 'package:block_dialog/src/animations/block_animation/block_animation.dart';
+import 'package:block_dialog/src/animations/block_animation_utils.dart';
 import 'package:block_dialog/src/layout/blocks/block.dart';
 import 'package:material_ui/material_ui.dart';
 
 class CinematicBlockAnimation extends BlockAnimation {
-  /// Cinematic animation with blur, scale, translation, and perspective.
+  /// Cinematic animation with blur, scale, translation, and perspective tilt.
   final double _baseDistance;
   final double _distanceMultiplier;
   final double _rotation;
@@ -24,36 +25,18 @@ class CinematicBlockAnimation extends BlockAnimation {
         _rotation = rotation ?? 0.06,
         _baseDistance = baseDistance ?? 90;
 
-  Offset _offsetForPosition(BlockPosition position, double distance) {
-    switch (position) {
-      case BlockPosition.top:
-        return Offset(0, -distance);
-      case BlockPosition.bottom:
-        return Offset(0, distance);
-      case BlockPosition.topLeft:
-        return Offset(-distance, -distance);
-      case BlockPosition.topRight:
-        return Offset(distance, -distance);
-      case BlockPosition.bottomLeft:
-        return Offset(-distance, distance);
-      case BlockPosition.bottomRight:
-        return Offset(distance, distance);
-      case BlockPosition.middleLeft:
-        return Offset(-distance, 0);
-      case BlockPosition.middleRight:
-        return Offset(distance, 0);
-      default:
-        return Offset.zero;
-    }
-  }
-
-  double _rotationForOffset(Offset from) {
-    if (from.dx == 0 && from.dy == 0) return 0;
-    if (from.dx.abs() >= from.dy.abs()) {
-      return from.dx.sign * _rotation;
-    }
-    return from.dy.sign * _rotation * 0.6;
-  }
+  static final TweenSequence<double> _scaleTween = TweenSequence<double>([
+    TweenSequenceItem(
+      tween: Tween<double>(begin: 0.92, end: 1.02)
+          .chain(CurveTween(curve: Curves.easeOutQuad)),
+      weight: 65,
+    ),
+    TweenSequenceItem(
+      tween: Tween<double>(begin: 1.02, end: 1.0)
+          .chain(CurveTween(curve: Curves.easeInOutCubic)),
+      weight: 35,
+    ),
+  ]);
 
   @override
   Widget build({
@@ -61,51 +44,49 @@ class CinematicBlockAnimation extends BlockAnimation {
     required BlockPosition position,
     required Animation<double> animation,
   }) {
-    final curved = CurvedAnimation(
-      parent: animation,
-      curve: Curves.easeOutCubic,
-      reverseCurve: Curves.easeInCubic,
+    final from = BlockAnimationUtils.offsetForPosition(
+      position,
+      _baseDistance * _distanceMultiplier,
     );
 
-    final from =
-        _offsetForPosition(position, _baseDistance * _distanceMultiplier);
-    final rotationZ = _rotationForOffset(from);
-
-    final scaleTween = TweenSequence<double>([
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 0.92, end: 1.02)
-            .chain(CurveTween(curve: Curves.easeOutQuad)),
-        weight: 65,
-      ),
-      TweenSequenceItem(
-        tween: Tween<double>(begin: 1.02, end: 1.0)
-            .chain(CurveTween(curve: Curves.easeInOutCubic)),
-        weight: 35,
-      ),
-    ]);
+    // Tilt angles at the start of the animation. A horizontal entrance tilts
+    // around the Y axis, a vertical one around X, so the perspective shows.
+    // Blocks with no offset (middle/full) do not tilt.
+    final horizontal = from.dx.abs() >= from.dy.abs();
+    final hasOffset = from != Offset.zero;
+    final tiltY = hasOffset && horizontal ? -from.dx.sign * _rotation : 0.0;
+    final tiltX = hasOffset && !horizontal ? from.dy.sign * _rotation : 0.0;
+    final tiltZ = hasOffset
+        ? (horizontal
+            ? from.dx.sign * _rotation
+            : from.dy.sign * _rotation * 0.6)
+        : 0.0;
 
     return AnimatedBuilder(
-      animation: curved,
-      builder: (_, __) {
-        final t = curved.value;
-        final scale = scaleTween.evaluate(curved);
-        final blur = _blurSigma * (1 - t);
-        final translate = Offset(from.dx * (1 - t), from.dy * (1 - t));
+      animation: animation,
+      child: child,
+      builder: (_, child) {
+        final t = BlockAnimationUtils.directionalCurve(animation);
+        final remaining = 1 - t;
+        final blur = _blurSigma * remaining;
 
         final transform = Matrix4.identity()
           ..setEntry(3, 2, _perspective)
-          ..rotateZ(rotationZ * (1 - t));
+          ..rotateX(tiltX * remaining)
+          ..rotateY(tiltY * remaining)
+          ..rotateZ(tiltZ * remaining);
 
         return Opacity(
-          opacity: t,
+          opacity: BlockAnimationUtils.fadeFor(animation),
           child: Transform(
             alignment: Alignment.center,
             transform: transform,
             child: Transform.translate(
-              offset: translate,
+              offset: from * remaining,
               child: Transform.scale(
-                scale: scale,
+                scale: _scaleTween.transform(t),
                 child: ImageFiltered(
+                  enabled: blur > 0.05,
                   imageFilter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
                   child: child,
                 ),

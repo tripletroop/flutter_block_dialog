@@ -2,6 +2,7 @@ import 'package:block_dialog/src/layout/blocks/block.dart';
 import 'package:block_dialog/src/layout/blocks/block_button.dart';
 import 'package:block_dialog/src/layout/blocks/block_checkbox.dart';
 import 'package:block_dialog/src/layout/blocks/block_custom.dart';
+import 'package:block_dialog/src/layout/blocks/block_dropdown.dart';
 import 'package:block_dialog/src/layout/blocks/block_text_field.dart';
 import 'package:block_dialog/src/layout/blocks/block_radio_group.dart';
 import 'package:block_dialog/src/layout/blocks/block_text.dart';
@@ -38,6 +39,7 @@ class BlockDialogController {
           columnIndex < row.blocks.length;
           columnIndex++) {
         final block = row.blocks[columnIndex];
+        block.staggerStart = (rowIndex * 0.06).clamp(0.0, 0.4).toDouble();
         final position = PositionResolvingData(
           rowIndex: rowIndex,
           rowCount: resolvableRows.length,
@@ -180,6 +182,14 @@ class BlockDialogController {
     return block.setOptionEnabled(option, enabled);
   }
 
+  /// Update the title of a tagged [BlockRadioGroup].
+  bool setBlockRadioGroupTitle(String blockTag, String? title) {
+    final block = getBlockByTagAs<BlockRadioGroup>(blockTag);
+    if (block == null) return false;
+    block.setTitle(title);
+    return true;
+  }
+
   /// Update the text of a tagged [BlockTextField]. Returns true on success.
   bool setBlockTextFieldText(String blockTag, String text) {
     final block = getBlockByTagAs<BlockTextField>(blockTag);
@@ -241,6 +251,33 @@ class BlockDialogController {
     final block = getBlockByTagAs<BlockTextField>(blockTag);
     if (block == null) return false;
     block.unfocus();
+    return true;
+  }
+
+  /// Update selected value of a tagged [BlockDropdown]. Returns true on success.
+  bool setBlockDropdownValue<T>(String blockTag, T? value) {
+    final block = getBlockByTagAs<BlockDropdown<T>>(blockTag);
+    if (block == null) return false;
+    return block.setSelectedValue(value);
+  }
+
+  /// Enable or disable one option of a tagged [BlockDropdown].
+  /// Returns true on success.
+  bool setBlockDropdownOptionEnabled<T>(
+    String blockTag,
+    T option,
+    bool enabled,
+  ) {
+    final block = getBlockByTagAs<BlockDropdown<T>>(blockTag);
+    if (block == null) return false;
+    return block.setOptionEnabled(option, enabled);
+  }
+
+  /// Update the title of a tagged [BlockDropdown].
+  bool setBlockDropdownTitle(String blockTag, String? title) {
+    final block = getBlockByTagAs<BlockDropdown>(blockTag);
+    if (block == null) return false;
+    block.setTitle(title);
     return true;
   }
 

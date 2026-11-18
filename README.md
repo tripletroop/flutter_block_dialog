@@ -21,9 +21,7 @@ dependencies:
 
 ## Preview
 
-| Slide                                      | Scale                                      | Cinematic                                      |
-| ------------------------------------------ | ------------------------------------------ | ---------------------------------------------- |
-| ![](assets/images/blocks_dialog_slide.gif) | ![](assets/images/blocks_dialog_scale.gif) | ![](assets/images/blocks_dialog_cinematic.gif) |
+![Block Dialog preview](assets/images/demo.gif)
 
 ---
 
@@ -63,6 +61,7 @@ BlockDialog.show(
 - `BlockTextField` — text input.
 - `BlockCheckbox` — boolean input.
 - `BlockRadioGroup<T>` — single-choice selection.
+- `BlockDropdown<T>` — single-choice selection.
 - `BlockButton` — action button (optionally closes the dialog).
 - `BlockSpacer` — vertical gap.
 - `BlockCustom` — any widget, optionally with its own `BlockCustomController`.
@@ -85,6 +84,11 @@ BlockDialog.show(
 - `BlockRadioGroup<T>`
   - setBlockRadioGroupValue
   - setBlockRadioGroupOptionEnabled
+  - setBlockRadioGroupTitle
+- `BlockDropdown<T>`
+  - setBlockDropdownValue
+  - setBlockDropdownOptionEnabled
+  - setBlockDropdownTitle
 - `BlockTextField`
   - setBlockTextFieldText
   - appendBlockTextFieldText

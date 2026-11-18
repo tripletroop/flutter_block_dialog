@@ -1,3 +1,40 @@
+## 6.0.0
+
+- Added
+  - BlockDropdown: a dropdown block with the same API as BlockRadioGroup
+    (initial value, disabled options, title, runtime setters).
+  - Optional title above BlockRadioGroup and BlockDropdown, with a
+    `titleBuilder` for custom title widgets. The builder is also called when
+    the title is null, so it must handle null.
+  - Runtime title updates: `setTitle()` on both blocks, plus
+    `BlockDialogController.setBlockRadioGroupTitle()` and
+    `setBlockDropdownTitle()`.
+  - `BlockDialogController.setBlockDropdownValue()` and
+    `setBlockDropdownOptionEnabled()`.
+  - Staggered animation: rows now enter top to bottom and leave bottom to top.
+  - Reduced-motion support: when the system has animations disabled, blocks
+    fade in and out instead of moving.
+
+- Changed
+  - **Breaking:** BlockRadioGroup `focusNode` replaced by `focusNodeBuilder`.
+    The builder must return the same node for the same option each time, and
+    the caller disposes the nodes.
+  - **Breaking:** BlockRadioGroup `titleAlignment` renamed to
+    `tileTitleAlignment`.
+  - BlockRadioGroup `autofocus` now focuses a single option (the initial
+    value, or the first option) instead of every tile.
+  - Smoother animations: slide, scale and elastic now use eased curves
+    instead of linear ones, and blocks fade in before they finish moving.
+  - Cinematic animation now tilts in 3D, so `perspective` and `rotation` have a
+    visible effect.
+  - Exit animations are faster than entrance animations.
+
+- Fixed
+  - Selection can now be cleared with `setSelectedValue(null)` and
+    `setBlockRadioGroupValue(tag, null)`.
+  - Fix a focus assertion when a single `focusNode` was shared by several
+    radio tiles.
+
 ## 5.0.0
 
 - Breaking Changes

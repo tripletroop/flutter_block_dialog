@@ -13,6 +13,7 @@ export 'src/layout/blocks/block_custom.dart';
 export 'src/layout/blocks/block_text_field.dart';
 export 'src/layout/blocks/block_spacer.dart';
 export 'src/layout/blocks/block_radio_group.dart';
+export 'src/layout/blocks/block_dropdown.dart';
 export 'src/layout/blocks/block_text.dart';
 
 // Models

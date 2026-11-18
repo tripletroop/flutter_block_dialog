@@ -60,6 +60,8 @@ abstract class Block {
     _rebuildTick.value = _rebuildTick.value + 1;
   }
 
+  double staggerStart = 0;
+
   /// Build the widget content for this block.
   @protected
   Widget buildContent(
@@ -113,6 +115,7 @@ abstract class Block {
           position: override?.animationPosition ?? _position,
           animationController: controller.animation,
           blockAnimation: override?.customAnimation ?? configs.blockAnimation,
+          staggerStart: staggerStart,
           child: Container(
             width: double.infinity,
             padding: this is BlockButton

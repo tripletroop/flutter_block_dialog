@@ -72,6 +72,7 @@ class ExampleHome extends StatelessWidget {
   void showUseFormDialog(BuildContext context) {
     BlockDialog.show(
       context,
+      configs: DialogConfig(animationDuration: Duration(seconds: 1)),
       rows: [
         adRow(context),
         BlockRow(blocks: [BlockText('User Form', isDialogTitle: true)]),
@@ -101,7 +102,9 @@ class ExampleHome extends StatelessWidget {
         BlockRow(
           blocks: [
             BlockRadioGroup<String>(
-              override: BlockOverride(animationPosition: BlockPosition.bottom),
+              override: BlockOverride(
+                animationPosition: BlockPosition.middleLeft,
+              ),
               blockTag: 'switch',
               options: ['Log In', 'Sign Up'],
               initialValue: 'Log In',
